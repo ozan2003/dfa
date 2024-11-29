@@ -70,14 +70,16 @@ class DFA:
 
         self.states[state_name] = State(state_name, is_accepting)
 
-    def add_transition(self, from_state: str, symbol: str, to_state: str) -> None:
+    def add_transition(
+        self, from_state_name: str, symbol: str, to_state_name: str
+    ) -> None:
         """
         Adds a transition for the given symbol to the specified state.
 
         Args:
             symbol (str): The symbol for which the transition is being added.
-            from_state (str): The name of the state from which the transition originates.
-            to_state (str): The name of the state to which the transition leads to.
+            from_state_name (str): The name of the state from which the transition originates.
+            to_state_name(str): The name of the state to which the transition leads to.
 
         Returns:
             None
@@ -90,20 +92,29 @@ class DFA:
             raise ValueError(f"Symbol '{symbol}' not in {self.alphabet}.")
 
         # Check if the states are in the DFA.
-        if from_state not in self.states:
-            raise ValueError(f"State '{from_state}' not in states.")
+        if from_state_name not in self.states:
+            raise ValueError(f"State '{from_state_name}' not in states.")
 
-        if to_state not in self.states:
-            raise ValueError(f"State '{to_state}' not in states.")
+        if to_state_name not in self.states:
+            raise ValueError(f"State '{to_state_name}' not in states.")
+
+        # Check if the same transition from same state for the same symbol already exists.
+        # state = self.transition_table.get(self.states[from_state_name])
+        if (
+            state := self.transition_table.get(self.states[from_state_name])
+        ) is not None and state.get(symbol) is not None:
+            raise ValueError(
+                f"Transition from '{from_state_name}' for the same symbol '{symbol}' already exists."
+            )
 
         # Add the transition to the transition table.
-        if self.states[from_state] not in self.transition_table:
-            self.transition_table[self.states[from_state]] = {}
+        if self.states[from_state_name] not in self.transition_table:
+            self.transition_table[self.states[from_state_name]] = {}
 
         # Add the symbol to the `from_state`'s transition.
         # self.transition_table[self.states[from_state]][symbol] = self.states[to_state]
-        self.transition_table[self.states[from_state]].update(
-            {symbol: self.states[to_state]}
+        self.transition_table[self.states[from_state_name]].update(
+            {symbol: self.states[to_state_name]}
         )
 
     def run(self, string: str) -> bool:
