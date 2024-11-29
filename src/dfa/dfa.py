@@ -35,10 +35,7 @@ class DFA:
         Returns:
             Optional[State]: The `State` object if found, otherwise `None`.
         """
-        if state_name in self.states:
-            return self.states[state_name]
-        else:
-            return None
+        return self.states.get(state_name, None)
 
     def add_state(self, state_name: str, is_accepting: bool = False) -> None:
         """
@@ -69,20 +66,26 @@ class DFA:
         Raises:
             ValueError: If the `symbol` is not in the alphabet, or if the `from_state` or `to_state` are not in DFA's states.
         """
-
+        # Check if the symbol is in the alphabet.
         if symbol not in self.alphabet:
             raise ValueError(f"Symbol '{symbol}' not in {self.alphabet}.")
 
+        # Check if the states are in the DFA.
         if from_state not in self.states:
             raise ValueError(f"State '{from_state}' not in states.")
 
         if to_state not in self.states:
             raise ValueError(f"State '{to_state}' not in states.")
 
+        # Add the transition to the transition table.
         if self.states[from_state] not in self.transition_table:
             self.transition_table[self.states[from_state]] = {}
 
-        self.transition_table[self.states[from_state]][symbol] = self.states[to_state]
+        # Add the symbol to the `from_state`'s transition.
+        # self.transition_table[self.states[from_state]][symbol] = self.states[to_state]
+        self.transition_table[self.states[from_state]].update(
+            {symbol: self.states[to_state]}
+        )
 
     def run(self, string: str) -> bool:
         """
@@ -98,21 +101,20 @@ class DFA:
             ValueError: If the a symbol in the string is not in the alphabet.
         """
         current_state = self.starting_state
+
         for symbol in string:
             # Check if the symbol is in the alphabet.
             if symbol not in self.alphabet:
                 raise ValueError(f"Symbol '{symbol}' not in alphabet.")
 
-            # current_state = current_state.get_state(symbol)
-            current_state = self.transition_table[current_state].get(
-                symbol, None
-            )  # Go to the next state, or None if there is no transition.
+            # Go to the next state, or None if there is no transition.
+            current_state = self.transition_table[current_state].get(symbol, None)
             # If the current state is None, the DFA is stuck and the string is not accepted.
             if current_state is None:
                 return False
         return current_state.is_accepting
 
-    def __getattr__(self, name: str) -> Optional[State]:
+    def __getattr__(self, state_name: str) -> Optional[State]:
         """
         Get a state by name.
 
@@ -122,4 +124,4 @@ class DFA:
         Returns:
             Optional[State]: The `State` object if found, otherwise `None`.
         """
-        return self.get_state(name)
+        return self.get_state(state_name)
