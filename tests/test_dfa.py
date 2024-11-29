@@ -26,7 +26,7 @@ class TestDFA(unittest.TestCase):
     def test_multiples_of_three(self):
         alphabet = set("01")
 
-        multiples_of_three = tuple(bin(num)[2:] for num in range(1, 10) if num % 3 == 0)
+        multiples_of_three = tuple(bin(num)[2:] for num in range(100, 500) if num % 3 == 0)
         # https://en.wikipedia.org/wiki/Deterministic_finite_automaton#/media/File:DFA_example_multiplies_of_3.svg
         states = {
             "s0": State("s0", True),
@@ -43,8 +43,13 @@ class TestDFA(unittest.TestCase):
         dfa.add_transition("s2", "1", "s2")
         dfa.add_transition("s2", "0", "s1")
 
+        # Check for multiples of three.
         for num in multiples_of_three:
             self.assertTrue(dfa.run(num))
+
+        # Check for non-multiples of three. Make sure the DFA rejects them.
+        self.assertFalse(dfa.run(bin(5)[2:]))
+        self.assertFalse(dfa.run(bin(45773)[2:]))
 
     def test_invalid_symbol(self):
         alphabet = set("01")
