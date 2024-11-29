@@ -8,18 +8,13 @@ from src.dfa.state import State
 class DFA:
     """
     A class representing a Deterministic Finite Automaton (DFA).
+
     Attributes:
         starting_state (State): The initial state of the DFA.
-        states (dict[str, State]): A dictionary mapping state names to State objects.
+        states (dict[str, State]): A dictionary mapping state names to `State` objects.
         alphabet (set[str]): The set of symbols that the DFA can recognize.
-        transition_table (dict[State, dict[str, State]]): A dictionary mapping states to dictionaries that map symbols to the states they transition.
-    Methods:
-        __str__() -> str:
-            Returns a string representation of the DFA.
-        get_state(name: str) -> Optional[State]:
-        add_state(state: State) -> None:
-        run(string: str) -> bool:
-        __getattr__(name: str) -> Optional[State]:
+        transition_table (dict[State, dict[str, State]]):
+            A dictionary mapping states to dictionaries that map symbols to the states they transition.
     """
 
     starting_state: State
@@ -35,10 +30,10 @@ class DFA:
         Retrieve the state object associated with the given name.
 
         Args:
-            name (str): The name of the state to retrieve.
+            state_name (str): The name of the `State` to retrieve.
 
         Returns:
-            Optional[State]: The state object if found, otherwise None.
+            Optional[State]: The `State` object if found, otherwise `None`.
         """
         if state_name in self.states:
             return self.states[state_name]
@@ -70,10 +65,13 @@ class DFA:
 
         Returns:
             None
+
+        Raises:
+            ValueError: If the `symbol` is not in the alphabet, or if the `from_state` or `to_state` are not in DFA's states.
         """
 
         if symbol not in self.alphabet:
-            raise ValueError(f"Symbol '{symbol}' not in alphabet.")
+            raise ValueError(f"Symbol '{symbol}' not in {self.alphabet}.")
 
         if from_state not in self.states:
             raise ValueError(f"State '{from_state}' not in states.")
@@ -83,15 +81,21 @@ class DFA:
 
         if self.states[from_state] not in self.transition_table:
             self.transition_table[self.states[from_state]] = {}
-            
+
         self.transition_table[self.states[from_state]][symbol] = self.states[to_state]
 
     def run(self, string: str) -> bool:
         """
         Run the DFA on the given string.
 
-        :param string: The string to run the DFA on.
-        :return: True if the DFA accepts the string, False otherwise.
+        Args:
+            string (str): The string to run the DFA on.
+
+        Returns:
+            bool: `True` if the DFA accepts the string, `False` otherwise.
+
+        Raises:
+            ValueError: If the a symbol in the string is not in the alphabet.
         """
         current_state = self.starting_state
         for symbol in string:
@@ -100,7 +104,9 @@ class DFA:
                 raise ValueError(f"Symbol '{symbol}' not in alphabet.")
 
             # current_state = current_state.get_state(symbol)
-            current_state = self.transition_table[current_state].get(symbol, None) # Go to the next state.
+            current_state = self.transition_table[current_state].get(
+                symbol, None
+            )  # Go to the next state, or None if there is no transition.
             # If the current state is None, the DFA is stuck and the string is not accepted.
             if current_state is None:
                 return False
@@ -110,7 +116,10 @@ class DFA:
         """
         Get a state by name.
 
-        :param name: The name of the state.
-        :return: The state with the given name, or None if it does not exist.
+        Args:
+            name (str): The name of the state to retrieve.
+
+        Returns:
+            Optional[State]: The `State` object if found, otherwise `None`.
         """
         return self.get_state(name)
