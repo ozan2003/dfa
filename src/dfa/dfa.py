@@ -1,3 +1,13 @@
+"""
+A module containing the `DFA` class, which represents a Deterministic Finite Automaton.
+
+The `DFA` class is used to represent a DFA and provides methods for adding states,
+transitions, and running the DFA on a string.
+
+Classes:
+    DFA: A class representing a Deterministic Finite Automaton (DFA).
+"""
+
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -9,12 +19,21 @@ class DFA:
     """
     A class representing a Deterministic Finite Automaton (DFA).
 
+    It is recommended to collect the states in a dictionary and pass it to the DFA constructor to avoid
+    cluttering the code.
+
+    Example:
+        >>> alphabet = set("01")
+        >>> states = {"s0": State("s0", True), "s1": State("s1", False)}
+
+        >>> dfa = DFA(states["s0"], states, alphabet)
+
     Attributes:
         starting_state (State): The initial state of the DFA.
-        states (dict[str, State]): A dictionary mapping state names to `State` objects.
+        states (dict[str, State]): A `dict` mapping states' names to `State` objects.
         alphabet (set[str]): The set of symbols that the DFA can recognize.
         transition_table (dict[State, dict[str, State]]):
-            A dictionary mapping states to dictionaries that map symbols to the states they transition.
+            A `dict` mapping states to `dict`s that map symbols to the states they transition.
     """
 
     starting_state: State
@@ -58,7 +77,7 @@ class DFA:
         Args:
             symbol (str): The symbol for which the transition is being added.
             from_state (str): The name of the state from which the transition originates.
-            to_state (str): The name of the state to which the transition leads.
+            to_state (str): The name of the state to which the transition leads to.
 
         Returns:
             None
