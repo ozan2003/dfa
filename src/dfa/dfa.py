@@ -11,7 +11,7 @@ Classes:
 from dataclasses import dataclass, field
 from typing import Optional
 
-from src.dfa.state import State
+from .state import State
 
 
 @dataclass
