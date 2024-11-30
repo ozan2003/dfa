@@ -19,8 +19,8 @@ class DFA:
     """
     A class representing a Deterministic Finite Automaton (DFA).
 
-    It is recommended to collect the states in a dictionary and pass it to the DFA constructor to avoid
-    cluttering the code.
+    It is recommended to collect the states in a dictionary and
+    pass it to the DFA constructor to avoid cluttering the code.
 
     Example:
         >>> alphabet = set("01")
@@ -39,12 +39,17 @@ class DFA:
     starting_state: State
     states: dict[str, State]
     alphabet: set[str]
-    transition_table: dict[State, dict[str, State]] = field(default_factory=dict)
+    transition_table: dict[State, dict[str, State]] = field(
+        default_factory=dict
+    )  # q0 -> {"sigma" -> q1}
 
     def __str__(self) -> str:
+        def transition_repr(transition: dict[str, State]) -> str:
+            return ", ".join(f"{symbol!r} -> {state}" for symbol, state in transition.items())
+
         table = "\n".join(
-            f"\t{state}: {{{", ".join(f'{symbol!r} -> {dest_state}' for symbol, dest_state in transitions.items())}}}"
-            for state, transitions in self.transition_table.items()
+            f"\t{from_state}: {transition_repr(transitions)}"
+            for from_state, transitions in self.transition_table.items()
         )
 
         return (
@@ -92,7 +97,8 @@ class DFA:
             None
 
         Raises:
-            ValueError: If the `symbol` is not in the alphabet, or if the `from_state` or `to_state` are not in DFA's states.
+            ValueError: If the `symbol` is not in the alphabet,
+            or if the `from_state` or `to_state` are not in DFA's states.
         """
         # Check if the symbol is in the alphabet.
         if symbol not in self.alphabet:
