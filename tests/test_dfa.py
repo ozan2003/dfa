@@ -8,6 +8,7 @@ Various DFAs from the recent lectures may be tested here.
 
 from src.dfa.dfa import DFA
 from src.dfa.state import State
+from src.dfa.minimize import minimize
 
 import unittest
 
@@ -59,6 +60,31 @@ class TestDFA(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             dfa.run("2")
+
+    def test_dfa_equivalence(self):
+        alphabet = set("01")
+        states1 = {"s0": State("s0", True), "s1": State("s1", False)}
+        states2 = {"q0": State("q0", True), "q1": State("q1", False)}
+
+        dfa1 = DFA(states1["s0"], states1, alphabet)
+
+        dfa1.add_transition("s0", "0", "s1")
+        dfa1.add_transition("s0", "1", "s0")
+        dfa1.add_transition("s1", "0", "s1")
+        dfa1.add_transition("s1", "1", "s0")
+
+        print(dfa1)
+
+        dfa2 = DFA(states2["q0"], states2, alphabet)
+
+        dfa2.add_transition("q0", "0", "q1")
+        dfa2.add_transition("q0", "1", "q0")
+        dfa2.add_transition("q1", "0", "q1")
+        dfa2.add_transition("q1", "1", "q0")
+
+        print(dfa2)
+
+        self.assertEqual(dfa1, dfa2)
 
     def test_invalid_transition(self):
         alphabet = set("01")
@@ -125,6 +151,65 @@ class TestDFA(unittest.TestCase):
         self.assertIn("s2", dfa.states)
         self.assertEqual(dfa.states["s2"].name, "s2")
         self.assertTrue(dfa.states["s2"].is_accepting)
+
+    def test_minimize(self):
+        # Check if the DFA is minimized correctly.
+        alphabet = set("01")
+
+        # Non-minimized DFA.
+        non_minimized_states = {
+            "a": State("a", False),
+            "b": State("b", False),
+            "c": State("c", True),
+            "d": State("d", True),
+            "e": State("e", True),
+            "f": State("f", False),
+        }
+
+        non_minimized_dfa = DFA(non_minimized_states["a"], non_minimized_states, alphabet)
+
+        non_minimized_dfa.add_transition("a", "0", "b")
+        non_minimized_dfa.add_transition("a", "1", "c")
+
+        non_minimized_dfa.add_transition("b", "0", "a")
+        non_minimized_dfa.add_transition("b", "1", "d")
+
+        non_minimized_dfa.add_transition("c", "0", "e")
+        non_minimized_dfa.add_transition("c", "1", "f")
+
+        non_minimized_dfa.add_transition("d", "0", "e")
+        non_minimized_dfa.add_transition("d", "1", "f")
+
+        non_minimized_dfa.add_transition("e", "0", "e")
+        non_minimized_dfa.add_transition("e", "1", "f")
+
+        non_minimized_dfa.add_transition("f", "0", "f")
+        non_minimized_dfa.add_transition("f", "1", "f")
+
+        minimized_dfa_states = {
+            "a,b": State("a,b", False),
+            "c,d,e": State("c,d,e", True),
+            "f": State("f", False),
+        }
+
+        # Minimized DFA by hand.
+        minimized_dfa = DFA(minimized_dfa_states["a,b"], minimized_dfa_states, alphabet)
+
+        minimized_dfa.add_transition("a,b", "0", "a,b")
+        minimized_dfa.add_transition("a,b", "1", "c,d,e")
+
+        minimized_dfa.add_transition("c,d,e", "0", "c,d,e")
+        minimized_dfa.add_transition("c,d,e", "1", "f")
+
+        minimized_dfa.add_transition("f", "0", "f")
+        minimized_dfa.add_transition("f", "1", "f")
+
+        # Supposedly minimized DFA by the algorithm.
+        supposedly_minimized_dfa = minimize(non_minimized_dfa)
+
+        self.assertEqual(minimized_dfa, supposedly_minimized_dfa, msg="DFA not minimized correctly.")
+
+
 
 
 def main():

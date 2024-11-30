@@ -16,14 +16,14 @@ def minimize(dfa: DFA) -> DFA:
     Returns:
         DFA: The minimized DFA.
     """
-    # Step 1: Initial partition of states into final and non-final states
-    final_states: set[State] = {
+    # Step 1: Initial partition of states into accepting and non-accepting states.
+    accepting_states: set[State] = {
         state for state in dfa.states.values() if state.is_accepting
     }
-    non_final_states: set[State] = {
+    non_accepting_states: set[State] = {
         state for state in dfa.states.values() if not state.is_accepting
     }
-    partition: list[set[State]] = [final_states, non_final_states]
+    partition: list[set[State]] = [accepting_states, non_accepting_states]
 
     # Helper function to find the group a state belongs to
     def find_group(state: State, partition: list[set[State]]) -> int:

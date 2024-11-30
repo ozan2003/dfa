@@ -172,3 +172,116 @@ class DFA:
             Optional[State]: The `State` object if found, otherwise `None`.
         """
         return self.get_state(state_name)
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Check if two DFA objects are equivalent by comparing their canonical forms.
+
+        Args:
+            other (object): The other DFA to compare with.
+
+        Returns:
+            bool: True if the two DFA objects are equivalent, False otherwise.
+        """
+        if not isinstance(other, DFA):
+            return NotImplemented
+
+        # Step 1: Check if alphabets are the same.
+        if self.alphabet != other.alphabet:
+            return False
+
+        # Step 2: Canonicalize both DFAs.
+        def canonical_form(dfa: DFA) -> tuple[dict[State, int], dict[int, State]]:
+            """
+            Computes the canonical form of a given DFA (Deterministic Finite Automaton).
+
+            This function assigns a unique index to each state in the DFA using a breadth-first search (BFS) 
+            starting from the DFA's starting state.
+
+            Args:
+                dfa (DFA): The deterministic finite automaton to be converted to its canonical form.
+
+            Returns:
+                tuple[dict[State, int], dict[int, State]]: 
+                    - state_to_index: A dictionary mapping each state to a unique index.
+                    - index_to_state: A dictionary mapping each index back to its corresponding state.
+            """
+            state_to_index: dict[State, int] = {}
+            index_to_state: dict[int, State] = {}
+            state_queue: list[State] = [dfa.starting_state]
+            visited_states: set[State] = set()
+
+            # BFS to assign indices.
+            next_index = 0
+            while len(state_queue) > 0:
+                state = state_queue.pop(0)
+                if state in visited_states:
+                    continue
+                visited_states.add(state)
+                state_to_index[state] = next_index
+                index_to_state[next_index] = state
+                next_index += 1
+
+                # Enqueue transitions.
+                for symbol in dfa.alphabet:
+                    if symbol in dfa.transition_table[state]:
+                        next_state = dfa.transition_table[state][symbol]
+
+                        if next_state not in visited_states:
+                            state_queue.append(next_state)
+
+            return state_to_index, index_to_state
+
+        def get_canonical_transitions(
+            dfa: DFA, state_to_index: dict[State, int]
+        ) -> dict[int, dict[str, int]]:
+            """
+            Generate the canonical transitions for a given DFA.
+
+            Args:
+                dfa (DFA): The DFA to generate canonical transitions for.
+                state_to_index (dict[State, int]): 
+                    A mapping from DFA states to their corresponding indices.
+
+            Returns:
+                dict[int, dict[str, int]]: A canonical transition table where states
+                are represented by their indices.
+            """
+            canonical_transitions: dict[int, dict[str, int]] = {}
+
+            for state, state_index in state_to_index.items():
+                canonical_transitions[state_index] = {
+                    symbol: state_to_index[dfa.transition_table[state][symbol]]
+                    for symbol in dfa.alphabet
+                    if symbol in dfa.transition_table[state]
+                }
+
+            return canonical_transitions
+
+        state_to_index_self, _ = canonical_form(self)
+        state_to_index_other, _ = canonical_form(other)
+
+        # Step 3: Compare canonical forms
+        if len(state_to_index_self) != len(state_to_index_other):
+            return False
+
+        # Compare transition tables.
+        canonical_transitions_of_self = get_canonical_transitions(
+            self, state_to_index_self
+        )
+        canonical_transitions_of_other = get_canonical_transitions(
+            other, state_to_index_other
+        )
+
+        if canonical_transitions_of_self != canonical_transitions_of_other:
+            return False
+
+        # Compare accepting states.
+        accepting_states_of_self = {
+            index for state, index in state_to_index_self.items() if state.is_accepting
+        }
+        accepting_states_of_other = {
+            index for state, index in state_to_index_other.items() if state.is_accepting
+        }
+
+        return accepting_states_of_self == accepting_states_of_other
