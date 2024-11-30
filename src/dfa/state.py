@@ -16,3 +16,7 @@ class State(NamedTuple):
 
     name: str
     is_accepting: bool
+
+    def __str__(self) -> str:
+        is_accepting_mark = "✓" if self.is_accepting else "✗"
+        return f"{self.name} ({is_accepting_mark})"

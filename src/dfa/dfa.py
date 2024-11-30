@@ -42,7 +42,14 @@ class DFA:
     transition_table: dict[State, dict[str, State]] = field(default_factory=dict)
 
     def __str__(self) -> str:
-        return f"DFA({self.starting_state}, {self.alphabet}, {self.states})"
+        table = "\n".join(
+            f"\t{state}: {{{", ".join(f'{symbol!r} -> {dest_state}' for symbol, dest_state in transitions.items())}}}"
+            for state, transitions in self.transition_table.items()
+        )
+
+        return (
+            f"DFA(Starting state: {self.starting_state}, Σ: {self.alphabet}):\n{table}"
+        )
 
     def get_state(self, state_name: str) -> Optional[State]:
         """
