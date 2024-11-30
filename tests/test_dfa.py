@@ -75,16 +75,12 @@ class TestDFA(unittest.TestCase):
         dfa1.add_transition("s1", "0", "s1")
         dfa1.add_transition("s1", "1", "s0")
 
-        print(dfa1)
-
         dfa2 = DFA(states2["q0"], states2, alphabet)
 
         dfa2.add_transition("q0", "0", "q1")
         dfa2.add_transition("q0", "1", "q0")
         dfa2.add_transition("q1", "0", "q1")
         dfa2.add_transition("q1", "1", "q0")
-
-        print(dfa2)
 
         self.assertEqual(dfa1, dfa2)
 
