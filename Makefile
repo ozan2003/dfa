@@ -1,8 +1,6 @@
 # Variables
 PYTHON := python3
 SRC_DIR := src
-TEST_DIR := tests
-PYTEST := $(PYTHON) -m unittest discover -s
 
 # Targets
 .PHONY: run test clean
@@ -13,7 +11,7 @@ run:
 
 # Run tests with unittest.
 test:
-	$(PYTEST) $(TEST_DIR)
+	$(PYTHON) -m unittest -v
 
 # Clean up Python cache files.
 clean:
