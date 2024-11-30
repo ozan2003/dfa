@@ -27,7 +27,9 @@ class TestDFA(unittest.TestCase):
     def test_multiples_of_three(self):
         alphabet = set("01")
 
-        multiples_of_three = tuple(bin(num)[2:] for num in range(100, 500) if num % 3 == 0)
+        multiples_of_three = tuple(
+            bin(num)[2:] for num in range(100, 500) if num % 3 == 0
+        )
         # https://en.wikipedia.org/wiki/Deterministic_finite_automaton#/media/File:DFA_example_multiplies_of_3.svg
         states = {
             "s0": State("s0", True),
@@ -166,7 +168,9 @@ class TestDFA(unittest.TestCase):
             "f": State("f", False),
         }
 
-        non_minimized_dfa = DFA(non_minimized_states["a"], non_minimized_states, alphabet)
+        non_minimized_dfa = DFA(
+            non_minimized_states["a"], non_minimized_states, alphabet
+        )
 
         non_minimized_dfa.add_transition("a", "0", "b")
         non_minimized_dfa.add_transition("a", "1", "c")
@@ -186,13 +190,13 @@ class TestDFA(unittest.TestCase):
         non_minimized_dfa.add_transition("f", "0", "f")
         non_minimized_dfa.add_transition("f", "1", "f")
 
+        # Minimized DFA by hand.
         minimized_dfa_states = {
             "a,b": State("a,b", False),
             "c,d,e": State("c,d,e", True),
             "f": State("f", False),
         }
 
-        # Minimized DFA by hand.
         minimized_dfa = DFA(minimized_dfa_states["a,b"], minimized_dfa_states, alphabet)
 
         minimized_dfa.add_transition("a,b", "0", "a,b")
@@ -207,9 +211,9 @@ class TestDFA(unittest.TestCase):
         # Supposedly minimized DFA by the algorithm.
         supposedly_minimized_dfa = minimize(non_minimized_dfa)
 
-        self.assertEqual(minimized_dfa, supposedly_minimized_dfa, msg="DFA not minimized correctly.")
-
-
+        self.assertEqual(
+            minimized_dfa, supposedly_minimized_dfa, msg="DFA not minimized correctly."
+        )
 
 
 def main():
