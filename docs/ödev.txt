@@ -5,3 +5,5 @@ Biçimsel Diller ve Soyut Makineler 2024-2025 Güz Dönemi Ödevi
    gereken en düşük versiyon "3.9"dur.
 
 2- 1. Seçenek seçildi.
+
+3- Alfabe büyüklüğünün bir üst sınırı yoktur, ancak 2 ve 3 harf test edildi.
