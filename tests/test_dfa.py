@@ -211,6 +211,69 @@ class TestDFA(unittest.TestCase):
             minimized_dfa, supposedly_minimized_dfa, msg="DFA not minimized correctly."
         )
 
+    def test_minimize_2(self):
+        # Something more complex.
+        alphabet = set("ab")
+
+        states = {
+            "A": State("A", False),
+            "B": State("B", False),
+            "C": State("C", True),
+            "D": State("D", False),
+            "E": State("E", False),
+            "F": State("F", False),
+            "G": State("G", False),
+        }
+
+        transitions = {
+            states["A"]: {"a": states["B"], "b": states["E"]},
+            states["B"]: {"a": states["F"], "b": states["C"]},
+            states["C"]: {"a": states["A"], "b": states["C"]},
+            states["D"]: {"a": states["G"], "b": states["E"]},
+            states["E"]: {"a": states["C"], "b": states["F"]},
+            states["F"]: {"a": states["F"], "b": states["D"]},
+            states["G"]: {"a": states["F"], "b": states["C"]},
+        }
+
+        non_minimized_dfa = DFA(states["A"], states, alphabet, transitions)
+
+        minimized_states = {
+            "A,D": State("A,D", False),
+            "B,G": State("B,G", False),
+            "C": State("C", True),
+            "E": State("E", False),
+            "F": State("F", False),
+        }
+
+        minimized_transitions = {
+            minimized_states["A,D"]: {
+                "a": minimized_states["B,G"],
+                "b": minimized_states["E"],
+            },
+            minimized_states["B,G"]: {
+                "a": minimized_states["F"],
+                "b": minimized_states["C"],
+            },
+            minimized_states["C"]: {
+                "a": minimized_states["A,D"],
+                "b": minimized_states["C"],
+            },
+            minimized_states["E"]: {
+                "a": minimized_states["C"],
+                "b": minimized_states["F"],
+            },
+            minimized_states["F"]: {
+                "a": minimized_states["F"],
+                "b": minimized_states["A,D"],
+            },
+        }
+
+        minimized_dfa = DFA(
+            minimized_states["A,D"], minimized_states, alphabet, minimized_transitions
+        )
+
+        self.assertEqual(minimized_dfa, minimize(non_minimized_dfa))
+
 
 def main():
     unittest.main()
