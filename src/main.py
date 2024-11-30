@@ -26,11 +26,11 @@ def main():
         states["7"]: {"a": states["6"], "b": states["7"]},
     }
 
-    non_minimum_dfa = DFA(states["1"], states, alphabet, transitions)
+    non_minimized_dfa = DFA(states["1"], states, alphabet, transitions)
 
-    print(f"Non-minimum DFA: {non_minimum_dfa}")
+    print(f"Non-minimum DFA: {non_minimized_dfa}")
 
-    minimized_dfa = minimize(non_minimum_dfa)
+    minimized_dfa = minimize(non_minimized_dfa)
 
     print(f"Minimized DFA: {minimized_dfa}")
 

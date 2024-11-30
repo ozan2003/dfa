@@ -42,17 +42,16 @@ def minimize(dfa: DFA) -> DFA:
                 return i
         return -1
 
-    # Step 2: Iteratively refine the partition
+    # Step 2: Iteratively refine the partition.
     refined: bool = True
     while refined:
         refined = False
         new_partition: list[set[State]] = []
 
         for group in partition:
-            # Split group into smaller groups based on transitions
+            # Split group into smaller groups based on transitions.
             split_groups: dict[tuple[int, ...], set[State]] = {}
             for state in group:
-                # Signature: tuple of groups reached on input symbols
                 signature: tuple[int, ...] = tuple(
                     find_group(dfa.transition_table[state][symbol], partition)
                     if symbol in dfa.transition_table[state]
@@ -72,7 +71,7 @@ def minimize(dfa: DFA) -> DFA:
 
         partition = new_partition
 
-    # Step 3: Construct the minimized DFA
+    # Step 3: Construct the minimized DFA.
     state_map: dict[State, int] = {
         state: i for i, group in enumerate(partition) for state in group
     }
