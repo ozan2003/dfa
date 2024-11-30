@@ -14,7 +14,7 @@ minver:
 
 # Run tests with unittest.
 test:
-	$(PYTHON) -m unittest -v
+	$(PYTHON) -m unittest -vv
 
 # Clean up Python cache files.
 clean:
