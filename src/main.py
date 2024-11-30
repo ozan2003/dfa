@@ -28,7 +28,7 @@ def main():
 
     non_minimized_dfa = DFA(states["1"], states, alphabet, transitions)
 
-    print(f"Non-minimum DFA: {non_minimized_dfa}")
+    print(f"Non-minimized DFA: {non_minimized_dfa}")
 
     minimized_dfa = minimize(non_minimized_dfa)
 
