@@ -195,14 +195,14 @@ class DFA:
             """
             Computes the canonical form of a given DFA (Deterministic Finite Automaton).
 
-            This function assigns a unique index to each state in the DFA using a breadth-first search (BFS) 
+            This function assigns a unique index to each state in the DFA using a breadth-first search (BFS)
             starting from the DFA's starting state.
 
             Args:
                 dfa (DFA): The deterministic finite automaton to be converted to its canonical form.
 
             Returns:
-                tuple[dict[State, int], dict[int, State]]: 
+                tuple[dict[State, int], dict[int, State]]:
                     - state_to_index: A dictionary mapping each state to a unique index.
                     - index_to_state: A dictionary mapping each index back to its corresponding state.
             """
@@ -240,7 +240,7 @@ class DFA:
 
             Args:
                 dfa (DFA): The DFA to generate canonical transitions for.
-                state_to_index (dict[State, int]): 
+                state_to_index (dict[State, int]):
                     A mapping from DFA states to their corresponding indices.
 
             Returns:
