@@ -1,25 +1,38 @@
 from dfa.dfa import DFA
 from dfa.state import State
+from dfa.minimize import minimize
+
 
 def main():
+    alphabet = set("ab")
+
     states = {
-        "s0": State("s0", is_accepting=False),
-        "s1": State("s1", is_accepting=False),
-        "s2": State("s2", is_accepting=True),
+        "1": State("1", False),
+        "2": State("2", False),
+        "3": State("3", False),
+        "4": State("4", True),
+        "5": State("5", False),
+        "6": State("6", True),
+        "7": State("7", True),
     }
 
-    alphabet = set("01")
+    transitions = {
+        states["1"]: {"a": states["2"], "b": states["3"]},
+        states["2"]: {"a": states["4"], "b": states["5"]},
+        states["3"]: {"a": states["6"], "b": states["7"]},
+        states["4"]: {"a": states["4"], "b": states["5"]},
+        states["5"]: {"a": states["6"], "b": states["7"]},
+        states["6"]: {"a": states["4"], "b": states["5"]},
+        states["7"]: {"a": states["6"], "b": states["7"]},
+    }
 
-    dfa = DFA(states["s0"], states, alphabet)
+    non_minimum_dfa = DFA(states["1"], states, alphabet, transitions)
 
-    dfa.add_transition("s0", "0", "s1")
-    dfa.add_transition("s0", "1", "s0")
-    dfa.add_transition("s1", "0", "s2")
-    dfa.add_transition("s1", "1", "s0")
-    dfa.add_transition("s2", "0", "s2")
-    dfa.add_transition("s2", "1", "s2")
+    print(f"Non-minimum DFA: {non_minimum_dfa}")
 
-    print(dfa)
+    minimized_dfa = minimize(non_minimum_dfa)
+
+    print(f"Minimized DFA: {minimized_dfa}")
 
 
 if __name__ == "__main__":
