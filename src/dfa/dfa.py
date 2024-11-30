@@ -45,7 +45,11 @@ class DFA:
 
     def __str__(self) -> str:
         def transition_repr(transition: dict[str, State]) -> str:
-            return ", ".join(f"{symbol!r} -> {state}" for symbol, state in transition.items())
+            return "{{{0}}}".format(
+                ", ".join(
+                    f"{symbol!r} -> {state}" for symbol, state in transition.items()
+                )
+            )
 
         table = "\n".join(
             f"\t{from_state}: {transition_repr(transitions)}"
