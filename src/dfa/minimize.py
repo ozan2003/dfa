@@ -25,8 +25,18 @@ def minimize(dfa: DFA) -> DFA:
     }
     partition: list[set[State]] = [accepting_states, non_accepting_states]
 
-    # Helper function to find the group a state belongs to
+    # Helper function to find the group a state belongs to.
     def find_group(state: State, partition: list[set[State]]) -> int:
+        """
+        Find the index of the group in the partition that contains the given state.
+
+        Args:
+            state (State): The state to find in the partition.
+            partition (list[set[State]]): A list of sets of group of states.
+
+        Returns:
+            int: The index of the group that contains the state, or -1 if the state isn't found in any group.
+        """
         for i, group in enumerate(partition):
             if state in group:
                 return i
