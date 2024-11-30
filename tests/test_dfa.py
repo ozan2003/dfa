@@ -1,5 +1,5 @@
 """
-This is the test file for the DFA module. It tests the DFA class and its methods, 
+This is the test file for the DFA module. It tests the DFA class and its methods,
 the way it handles edge cases,
 including empty strings, invalid symbols, invalid transitions.
 
@@ -70,6 +70,18 @@ class TestDFA(unittest.TestCase):
         with self.assertRaises(ValueError):
             dfa.add_transition("s0", "2", "s1")
 
+    def test_same_transition_twice(self):
+        # A DFA cannot accept the same symbol from the same state to two different states.
+        alphabet = set("01")
+        states = {"s0": State("s0", True), "s1": State("s1", False)}
+
+        dfa = DFA(states["s0"], states, alphabet)
+
+        dfa.add_transition("s0", "0", "s1")
+
+        with self.assertRaises(ValueError):
+            dfa.add_transition("s0", "0", "s0")
+
     def test_odd_ones(self):
         # A DFA that accepts strings that contain an odd number of 1s.
         alphabet = set("01")
@@ -91,6 +103,28 @@ class TestDFA(unittest.TestCase):
         self.assertFalse(dfa.run("11"))
         self.assertFalse(dfa.run("11011"))
         self.assertFalse(dfa.run("000000"))
+
+    def test_add_state(self):
+        alphabet: set[str] = set()
+        states = {"s0": State("s0", True)}
+
+        dfa = DFA(states["s0"], states, alphabet)
+
+        # Add a new state.
+        dfa.add_state("s1", False)
+
+        # Check if the state was added.
+        self.assertIn("s1", dfa.states)
+        self.assertEqual(dfa.states["s1"].name, "s1")
+        self.assertFalse(dfa.states["s1"].is_accepting)
+
+        # Add another state.s
+        dfa.add_state("s2", True)
+
+        # Check if the state was added.
+        self.assertIn("s2", dfa.states)
+        self.assertEqual(dfa.states["s2"].name, "s2")
+        self.assertTrue(dfa.states["s2"].is_accepting)
 
 
 def main():
