@@ -3,11 +3,14 @@ PYTHON := python3
 SRC_DIR := src
 
 # Targets
-.PHONY: run test clean
+.PHONY: run test clean minver
 
 # Run the main program.
 run:
 	$(PYTHON) $(SRC_DIR)/main.py
+
+minver:
+	vermin --backport dataclasses --backport typing --no-parse-comments --eval-annotations .
 
 # Run tests with unittest.
 test:
