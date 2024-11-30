@@ -16,7 +16,7 @@ import unittest
 class TestDFA(unittest.TestCase):
     def test_empty_string(self):
         alphabet = set("01")
-        states = {"s0": State("s0", True), "s1": State("s1", False)}
+        states = {"s0": State("s0", True), "s1": State("s1")}
 
         starting_state = states["s0"]
 
@@ -33,8 +33,8 @@ class TestDFA(unittest.TestCase):
         # https://en.wikipedia.org/wiki/Deterministic_finite_automaton#/media/File:DFA_example_multiplies_of_3.svg
         states = {
             "s0": State("s0", True),
-            "s1": State("s1", False),
-            "s2": State("s2", False),
+            "s1": State("s1"),
+            "s2": State("s2"),
         }
 
         dfa = DFA(states["s0"], states, alphabet)
@@ -56,7 +56,7 @@ class TestDFA(unittest.TestCase):
 
     def test_invalid_symbol(self):
         alphabet = set("01")
-        states = {"s0": State("s0", True), "s1": State("s1", False)}
+        states = {"s0": State("s0", True), "s1": State("s1")}
 
         dfa = DFA(states["s0"], states, alphabet)
 
@@ -65,8 +65,8 @@ class TestDFA(unittest.TestCase):
 
     def test_dfa_equivalence(self):
         alphabet = set("01")
-        states1 = {"s0": State("s0", True), "s1": State("s1", False)}
-        states2 = {"q0": State("q0", True), "q1": State("q1", False)}
+        states1 = {"s0": State("s0", True), "s1": State("s1")}
+        states2 = {"q0": State("q0", True), "q1": State("q1")}
 
         dfa1 = DFA(states1["s0"], states1, alphabet)
 
@@ -87,7 +87,7 @@ class TestDFA(unittest.TestCase):
     def test_invalid_transition(self):
         alphabet = set("01")
         s0 = State("s0", True)
-        s1 = State("s1", False)
+        s1 = State("s1")
 
         dfa = DFA(s0, {"s0": s0, "s1": s1}, alphabet)
 
@@ -97,7 +97,7 @@ class TestDFA(unittest.TestCase):
     def test_same_transition_twice(self):
         # A DFA cannot accept the same symbol from the same state to two different states.
         alphabet = set("01")
-        states = {"s0": State("s0", True), "s1": State("s1", False)}
+        states = {"s0": State("s0", True), "s1": State("s1")}
 
         dfa = DFA(states["s0"], states, alphabet)
 
@@ -110,7 +110,7 @@ class TestDFA(unittest.TestCase):
         # A DFA that accepts strings that contain an odd number of 1s.
         alphabet = set("01")
 
-        states = {"D": State("D", False), "E": State("E", True)}
+        states = {"D": State("D"), "E": State("E", True)}
 
         dfa = DFA(states["D"], states, alphabet)
 
@@ -135,7 +135,7 @@ class TestDFA(unittest.TestCase):
         dfa = DFA(states["s0"], states, alphabet)
 
         # Add a new state.
-        dfa.add_state("s1", False)
+        dfa.add_state("s1")
 
         # Check if the state was added.
         self.assertIn("s1", dfa.states)
@@ -156,12 +156,12 @@ class TestDFA(unittest.TestCase):
 
         # Non-minimized DFA.
         non_minimized_states = {
-            "a": State("a", False),
-            "b": State("b", False),
+            "a": State("a"),
+            "b": State("b"),
             "c": State("c", True),
             "d": State("d", True),
             "e": State("e", True),
-            "f": State("f", False),
+            "f": State("f"),
         }
 
         non_minimized_dfa = DFA(
@@ -188,9 +188,9 @@ class TestDFA(unittest.TestCase):
 
         # Minimized DFA by hand.
         minimized_dfa_states = {
-            "a,b": State("a,b", False),
+            "a,b": State("a,b"),
             "c,d,e": State("c,d,e", True),
-            "f": State("f", False),
+            "f": State("f"),
         }
 
         minimized_dfa = DFA(minimized_dfa_states["a,b"], minimized_dfa_states, alphabet)
@@ -216,13 +216,13 @@ class TestDFA(unittest.TestCase):
         alphabet = set("ab")
 
         states = {
-            "A": State("A", False),
-            "B": State("B", False),
+            "A": State("A"),
+            "B": State("B"),
             "C": State("C", True),
-            "D": State("D", False),
-            "E": State("E", False),
-            "F": State("F", False),
-            "G": State("G", False),
+            "D": State("D"),
+            "E": State("E"),
+            "F": State("F"),
+            "G": State("G"),
         }
 
         transitions = {
@@ -238,11 +238,11 @@ class TestDFA(unittest.TestCase):
         non_minimized_dfa = DFA(states["A"], states, alphabet, transitions)
 
         minimized_states = {
-            "A,D": State("A,D", False),
-            "B,G": State("B,G", False),
+            "A,D": State("A,D"),
+            "B,G": State("B,G"),
             "C": State("C", True),
-            "E": State("E", False),
-            "F": State("F", False),
+            "E": State("E"),
+            "F": State("F"),
         }
 
         minimized_transitions = {
