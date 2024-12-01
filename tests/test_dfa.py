@@ -27,9 +27,7 @@ class TestDFA(unittest.TestCase):
     def test_multiples_of_three(self):
         alphabet = set("01")
 
-        multiples_of_three = tuple(
-            bin(num)[2:] for num in range(100, 500) if num % 3 == 0
-        )
+        multiples_of_three = (bin(num)[2:] for num in range(100, 500) if num % 3 == 0)
         # https://en.wikipedia.org/wiki/Deterministic_finite_automaton#/media/File:DFA_example_multiplies_of_3.svg
         states = {
             "s0": State("s0", True),
