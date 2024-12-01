@@ -41,13 +41,13 @@ def minimize(dfa: DFA) -> DFA:
         Returns:
             int: The index of the group that contains the state, or -1 if the state isn't found in any group.
         """
-        for i, group in enumerate(partition):
+        for partition_index, group in enumerate(partition):
             if state in group:
-                return i
+                return partition_index
         return -1
 
     # Step 2: Check all states in same partition have same behavior.
-    # Two states are said to be exhibiting the same behavior if and only if for each input, 
+    # Two states are said to be exhibiting the same behavior if and only if for each input,
     # both the states makes transitions to the same partition (not necessarily the same state).
     is_consistent: bool = True
     while is_consistent:
@@ -80,18 +80,22 @@ def minimize(dfa: DFA) -> DFA:
 
     # Step 3: Construct the minimized DFA.
     state_map: dict[State, int] = {
-        state: i for i, group in enumerate(state_partition) for state in group
+        state: partition_index
+        for partition_index, group in enumerate(state_partition)
+        for state in group
     }
     new_states: dict[str, State] = {
-        f"s{i}": State(f"s{i}", any(s.is_accepting for s in group))
-        for i, group in enumerate(state_partition)
+        f"s{partition_index}": State(
+            f"s{partition_index}", any(s.is_accepting for s in group)
+        )
+        for partition_index, group in enumerate(state_partition)
     }
     new_transition_table: dict[State, dict[str, State]] = {}
 
-    for i, group in enumerate(state_partition):
+    for partition_index, group in enumerate(state_partition):
         # Pick an arbitrary state from the group.
         representative: State = next(iter(group))
-        new_state: State = new_states[f"s{i}"]
+        new_state: State = new_states[f"s{partition_index}"]
         new_transition_table[new_state] = {}
 
         for symbol in dfa.alphabet:
