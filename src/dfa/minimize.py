@@ -2,6 +2,7 @@
 This is the implementation file of DFA minimization algorithm.
 """
 
+from typing import Optional
 from .dfa import DFA
 from .state import State
 
@@ -30,7 +31,7 @@ def minimize(dfa: DFA) -> DFA:
     state_partition: list[set[State]] = [accepting_states, non_accepting_states]
 
     # Helper function to find the group a state belongs to.
-    def find_group(state: State, partition: list[set[State]]) -> int:
+    def find_group(state: State, partition: list[set[State]]) -> Optional[int]:
         """
         Find the index of the group in the partition that contains the given state.
 
@@ -39,12 +40,12 @@ def minimize(dfa: DFA) -> DFA:
             partition (list[set[State]]): A list of sets of group of states.
 
         Returns:
-            int: The index of the group that contains the state, or -1 if the state isn't found in any group.
+            int: The index of the group that contains the state, or `None` if the state isn't found in any group.
         """
         for partition_index, group in enumerate(partition):
             if state in group:
                 return partition_index
-        return -1
+        return None
 
     # Step 2: Check all states in same partition have same behavior.
     # Two states are said to be exhibiting the same behavior if and only if for each input,
@@ -56,12 +57,12 @@ def minimize(dfa: DFA) -> DFA:
 
         for group in state_partition:
             # Split group into smaller groups based on transitions.
-            split_groups: dict[tuple[int, ...], set[State]] = {}
+            split_groups: dict[tuple[Optional[int], ...], set[State]] = {}
             for state in group:
-                signature: tuple[int, ...] = tuple(
+                signature: tuple[Optional[int], ...] = tuple(
                     find_group(dfa.transition_table[state][symbol], state_partition)
                     if symbol in dfa.transition_table[state]
-                    else -1
+                    else None
                     for symbol in dfa.alphabet
                 )
                 if signature not in split_groups:
