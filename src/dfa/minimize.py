@@ -9,6 +9,10 @@ from .state import State
 def minimize(dfa: DFA) -> DFA:
     """
     Minimize the DFA.
+    The algorithm used here is the Hopcroft's algorithm[1].
+    https://swaminathanj.github.io/fsm/dfaminimization.html
+
+    [1]: https://en.wikipedia.org/wiki/DFA_minimization#Hopcroft's_algorithm
 
     Args:
         dfa (DFA): The DFA to be minimized.
@@ -23,7 +27,7 @@ def minimize(dfa: DFA) -> DFA:
     non_accepting_states: set[State] = {
         state for state in dfa.states.values() if not state.is_accepting
     }
-    partition: list[set[State]] = [accepting_states, non_accepting_states]
+    state_partition: list[set[State]] = [accepting_states, non_accepting_states]
 
     # Helper function to find the group a state belongs to.
     def find_group(state: State, partition: list[set[State]]) -> int:
@@ -42,18 +46,20 @@ def minimize(dfa: DFA) -> DFA:
                 return i
         return -1
 
-    # Step 2: Iteratively refine the partition.
-    refined: bool = True
-    while refined:
-        refined = False
+    # Step 2: Check all states in same partition have same behavior.
+    # Two states are said to be exhibiting the same behavior if and only if for each input, 
+    # both the states makes transitions to the same partition (not necessarily the same state).
+    is_consistent: bool = True
+    while is_consistent:
+        is_consistent = False
         new_partition: list[set[State]] = []
 
-        for group in partition:
+        for group in state_partition:
             # Split group into smaller groups based on transitions.
             split_groups: dict[tuple[int, ...], set[State]] = {}
             for state in group:
                 signature: tuple[int, ...] = tuple(
-                    find_group(dfa.transition_table[state][symbol], partition)
+                    find_group(dfa.transition_table[state][symbol], state_partition)
                     if symbol in dfa.transition_table[state]
                     else -1
                     for symbol in dfa.alphabet
@@ -62,26 +68,27 @@ def minimize(dfa: DFA) -> DFA:
                     split_groups[signature] = set()
                 split_groups[signature].add(state)
 
-            # Add split groups to the new partition
+            # Add split groups to the new partition.
             new_partition.extend(split_groups.values())
 
-        # Check if the partition has changed
-        if len(new_partition) > len(partition):
-            refined = True
+        # Check if the partition has changed.
+        if len(new_partition) > len(state_partition):
+            is_consistent = True
 
-        partition = new_partition
+        # Re-compute the transitions with respect to the modified partition set.
+        state_partition = new_partition
 
     # Step 3: Construct the minimized DFA.
     state_map: dict[State, int] = {
-        state: i for i, group in enumerate(partition) for state in group
+        state: i for i, group in enumerate(state_partition) for state in group
     }
     new_states: dict[str, State] = {
         f"s{i}": State(f"s{i}", any(s.is_accepting for s in group))
-        for i, group in enumerate(partition)
+        for i, group in enumerate(state_partition)
     }
     new_transition_table: dict[State, dict[str, State]] = {}
 
-    for i, group in enumerate(partition):
+    for i, group in enumerate(state_partition):
         # Pick an arbitrary state from the group.
         representative: State = next(iter(group))
         new_state: State = new_states[f"s{i}"]
