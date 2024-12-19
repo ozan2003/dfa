@@ -8,3 +8,5 @@ minver: Ödevde belirtilen minimum python sürümünü belirler.
 test: tests klasöründeki testleri çalıştırır.
 
 clean: Derlenmiş Python dosyalarını ve önbellek dosyalarını siler.
+
+help: Makefile'daki komutları listeler.
