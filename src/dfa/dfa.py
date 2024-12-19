@@ -24,13 +24,13 @@ class DFA:
 
     Example:
         >>> alphabet = set("01")
-        >>> states = {"s0": State("s0", True), "s1": State("s1", False)}
+        >>> states = {"s0": State("s0", True), "s1": State("s1")}
         >>> transitions = {
         ...     states["s0"]: {"0": states["s0"], "1": states["s1"]},
         ...     states["s1"]: {"0": states["s1"], "1": states["s0"]},
         ... }
 
-        >>> dfa = DFA(states["s0"], states, alphabet)
+        >>> dfa = DFA(states["s0"], states, alphabet, transitions)
 
     Attributes:
         starting_state (State): The initial state of the DFA.
