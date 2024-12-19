@@ -5,7 +5,11 @@ This module is dedicated to the implementation of a Deterministic Finite Automat
 ## How to use
 
 ```python
+<<<<<<< HEAD
 from dfa import DFA, State
+=======
+from dfa import DFA
+>>>>>>> refs/remotes/origin/master
 
 # Define the alphabet.
 alphabet = set("01")
