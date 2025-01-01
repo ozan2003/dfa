@@ -10,6 +10,8 @@ Classes:
 
 from dataclasses import dataclass, field
 from typing import Optional
+import json
+from pathlib import Path
 
 from .state import State
 
@@ -35,17 +37,21 @@ class Dfa:
     Attributes:
         starting_state (State): The initial state of the DFA.
         states (dict[str, State]): A `dict` mapping states' names to `State` objects.
-        alphabet (set[str]): The set of symbols that the DFA can recognize.
+        alphabet (set[str] | frozenset[str]): The set of symbols that the DFA can recognize.
         transition_table (dict[State, dict[str, State]]):
             A `dict` mapping states to `dict`s that map symbols to the states they transition.
     """
 
     starting_state: State
     states: dict[str, State]
-    alphabet: set[str]
+    alphabet: set[str] | frozenset[str]
     transition_table: dict[State, dict[str, State]] = field(
         default_factory=dict
     )  # q0 -> {"sigma" -> q1}
+
+    def __post_init__(self):
+        # Convert alphabet to frozenset for immutability and serializability.
+        self.alphabet = frozenset(self.alphabet)
 
     def __str__(self) -> str:
         def transition_repr(transition: dict[str, State]) -> str:
@@ -289,3 +295,67 @@ class Dfa:
         }
 
         return accepting_states_of_self == accepting_states_of_other
+
+    def dump_json(self, path: Path) -> None:
+        """
+        Dump the DFA object to a JSON file.
+
+        Args:
+            path (Path): The path to the JSON file.
+
+        Returns:
+            None
+        """
+        # Convert the DFA to a serializable dictionary
+        dfa_dict = {
+            "starting_state": self.starting_state.name,  # Just store the name
+            "states": {
+                name: {"name": state.name, "is_accepting": state.is_accepting}
+                for name, state in self.states.items()
+            },
+            "alphabet": tuple(self.alphabet),  # Convert set to tuple for serialization
+            "transition_table": {
+                from_state.name: {  # Use state names as keys
+                    symbol: to_state.name  # Store state names instead of State objects
+                    for symbol, to_state in transitions.items()
+                }
+                for from_state, transitions in self.transition_table.items()
+            }
+        }
+        json.dump(dfa_dict, path.open("w"), indent=2)
+
+    @classmethod
+    def from_json(cls, path: Path) -> "Dfa":
+        """
+        Load the DFA object from a JSON file.
+
+        Args:
+            path (Path): The path to the JSON file.
+
+        Returns:
+            Dfa: The DFA object loaded from the JSON file.
+        """
+        with path.open("r") as file:
+            data = json.load(file)
+
+        # First recreate all states
+        states = {
+            name: State(state_data["name"], state_data["is_accepting"])
+            for name, state_data in data["states"].items()
+        }
+
+        # Reconstruct transition table using the recreated states
+        transition_table: dict[State, dict[str, State]] = {}
+        for from_state_name, transitions in data["transition_table"].items():
+            from_state = states[from_state_name]
+            transition_table[from_state] = {
+                symbol: states[to_state_name]
+                for symbol, to_state_name in transitions.items()
+            }
+
+        return cls(
+            starting_state=states[data["starting_state"]],
+            states=states,
+            alphabet=set(data["alphabet"]),
+            transition_table=transition_table
+        )
