@@ -320,7 +320,7 @@ class Dfa:
                     for symbol, to_state in transitions.items()
                 }
                 for from_state, transitions in self.transition_table.items()
-            }
+            },
         }
         json.dump(dfa_dict, path.open("w"), indent=2)
 
@@ -357,5 +357,5 @@ class Dfa:
             starting_state=states[data["starting_state"]],
             states=states,
             alphabet=set(data["alphabet"]),
-            transition_table=transition_table
+            transition_table=transition_table,
         )
