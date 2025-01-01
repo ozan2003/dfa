@@ -1,5 +1,4 @@
-from dfa.dfa import DFA
-from dfa.state import State
+from dfa.dfa import Dfa, State
 from dfa.minimize import minimize
 
 
