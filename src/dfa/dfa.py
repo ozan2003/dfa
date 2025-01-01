@@ -322,7 +322,9 @@ class Dfa:
                 for from_state, transitions in self.transition_table.items()
             },
         }
-        json.dump(dfa_dict, path.open("w"), indent=2)
+        # json.dump(dfa_dict, path.open("w"), indent=2)
+        with path.open("w") as file:
+            json.dump(dfa_dict, file, indent=2)
 
     @classmethod
     def from_json(cls, path: Path) -> "Dfa":

@@ -276,12 +276,9 @@ class TestDFA(unittest.TestCase):
 
     # Test JSON serialization.
     def test_dump_json(self):
-        alphabet = set("01") 
-        states = {
-            "s0": State("s0", True),
-            "s1": State("s1")
-        }
-        
+        alphabet = set("01")
+        states = {"s0": State("s0", True), "s1": State("s1")}
+
         dfa = Dfa(states["s0"], states, alphabet)
         dfa.add_transition("s0", "0", "s1")
         dfa.add_transition("s0", "1", "s0")
@@ -289,20 +286,15 @@ class TestDFA(unittest.TestCase):
         dfa.add_transition("s1", "1", "s0")
 
         # Create temporary test file.
-        with tempfile.NamedTemporaryFile(suffix='.json', delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(suffix=".json") as temp_file:
             temp_path = Path(temp_file.name)
-            
-        try:
+
             # Test dumping to JSON.
             dfa.dump_json(temp_path)
-            
+
             # Test loading back produces equivalent DFA.
             loaded_dfa = Dfa.from_json(temp_path)
             self.assertEqual(dfa, loaded_dfa)
-            
-        finally:
-            # Cleanup.
-            temp_path.unlink()
 
 
 def main():
