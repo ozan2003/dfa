@@ -15,7 +15,7 @@ from .state import State
 
 
 @dataclass
-class DFA:
+class Dfa:
     """
     A class representing a Deterministic Finite Automaton (DFA).
 
@@ -187,7 +187,7 @@ class DFA:
         Returns:
             bool: True if the two DFA objects are equivalent, False otherwise.
         """
-        if not isinstance(other, DFA):
+        if not isinstance(other, Dfa):
             return NotImplemented
 
         # Step 1: Check if alphabets are the same.
@@ -195,7 +195,7 @@ class DFA:
             return False
 
         # Step 2: Canonicalize both DFAs.
-        def canonical_form(dfa: DFA) -> tuple[dict[State, int], dict[int, State]]:
+        def canonical_form(dfa: Dfa) -> tuple[dict[State, int], dict[int, State]]:
             """
             Computes the canonical form of a given DFA (Deterministic Finite Automaton).
 
@@ -237,7 +237,7 @@ class DFA:
             return state_to_index, index_to_state
 
         def get_canonical_transitions(
-            dfa: DFA, state_to_index: dict[State, int]
+            dfa: Dfa, state_to_index: dict[State, int]
         ) -> dict[int, dict[str, int]]:
             """
             Generate the canonical transitions for a given DFA.

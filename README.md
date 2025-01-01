@@ -5,6 +5,8 @@ This module is dedicated to the implementation of a Deterministic Finite Automat
 ## How to use
 
 ```python
+from dfa import DFA, State
+
 # Define the alphabet.
 alphabet = set("01")
 
