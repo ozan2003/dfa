@@ -6,7 +6,7 @@ including empty strings, invalid symbols, invalid transitions.
 Various DFAs from the recent lectures may be tested here.
 """
 
-from src.dfa.dfa import DFA
+from src.dfa.dfa import Dfa
 from src.dfa.state import State
 from src.dfa.minimize import minimize
 
@@ -20,7 +20,7 @@ class TestDFA(unittest.TestCase):
 
         starting_state = states["s0"]
 
-        dfa = DFA(starting_state, states, alphabet)
+        dfa = Dfa(starting_state, states, alphabet)
 
         self.assertEqual(dfa.run(""), starting_state.is_accepting)
 
@@ -35,7 +35,7 @@ class TestDFA(unittest.TestCase):
             "s2": State("s2"),
         }
 
-        dfa = DFA(states["s0"], states, alphabet)
+        dfa = Dfa(states["s0"], states, alphabet)
 
         dfa.add_transition("s0", "0", "s0")
         dfa.add_transition("s0", "1", "s1")
@@ -56,7 +56,7 @@ class TestDFA(unittest.TestCase):
         alphabet = set("01")
         states = {"s0": State("s0", True), "s1": State("s1")}
 
-        dfa = DFA(states["s0"], states, alphabet)
+        dfa = Dfa(states["s0"], states, alphabet)
 
         with self.assertRaises(ValueError):
             dfa.run("2")
@@ -66,14 +66,14 @@ class TestDFA(unittest.TestCase):
         states1 = {"s0": State("s0", True), "s1": State("s1")}
         states2 = {"q0": State("q0", True), "q1": State("q1")}
 
-        dfa1 = DFA(states1["s0"], states1, alphabet)
+        dfa1 = Dfa(states1["s0"], states1, alphabet)
 
         dfa1.add_transition("s0", "0", "s1")
         dfa1.add_transition("s0", "1", "s0")
         dfa1.add_transition("s1", "0", "s1")
         dfa1.add_transition("s1", "1", "s0")
 
-        dfa2 = DFA(states2["q0"], states2, alphabet)
+        dfa2 = Dfa(states2["q0"], states2, alphabet)
 
         dfa2.add_transition("q0", "0", "q1")
         dfa2.add_transition("q0", "1", "q0")
@@ -87,7 +87,7 @@ class TestDFA(unittest.TestCase):
         s0 = State("s0", True)
         s1 = State("s1")
 
-        dfa = DFA(s0, {"s0": s0, "s1": s1}, alphabet)
+        dfa = Dfa(s0, {"s0": s0, "s1": s1}, alphabet)
 
         with self.assertRaises(ValueError):
             dfa.add_transition("s0", "2", "s1")
@@ -97,7 +97,7 @@ class TestDFA(unittest.TestCase):
         alphabet = set("01")
         states = {"s0": State("s0", True), "s1": State("s1")}
 
-        dfa = DFA(states["s0"], states, alphabet)
+        dfa = Dfa(states["s0"], states, alphabet)
 
         dfa.add_transition("s0", "0", "s1")
 
@@ -110,7 +110,7 @@ class TestDFA(unittest.TestCase):
 
         states = {"D": State("D"), "E": State("E", True)}
 
-        dfa = DFA(states["D"], states, alphabet)
+        dfa = Dfa(states["D"], states, alphabet)
 
         dfa.add_transition("D", "0", "D")
         dfa.add_transition("D", "1", "E")
@@ -130,7 +130,7 @@ class TestDFA(unittest.TestCase):
         alphabet: set[str] = set()
         states = {"s0": State("s0", True)}
 
-        dfa = DFA(states["s0"], states, alphabet)
+        dfa = Dfa(states["s0"], states, alphabet)
 
         # Add a new state.
         dfa.add_state("s1")
@@ -162,7 +162,7 @@ class TestDFA(unittest.TestCase):
             "f": State("f"),
         }
 
-        non_minimized_dfa = DFA(
+        non_minimized_dfa = Dfa(
             non_minimized_states["a"], non_minimized_states, alphabet
         )
 
@@ -191,7 +191,7 @@ class TestDFA(unittest.TestCase):
             "f": State("f"),
         }
 
-        minimized_dfa = DFA(minimized_dfa_states["a,b"], minimized_dfa_states, alphabet)
+        minimized_dfa = Dfa(minimized_dfa_states["a,b"], minimized_dfa_states, alphabet)
 
         minimized_dfa.add_transition("a,b", "0", "a,b")
         minimized_dfa.add_transition("a,b", "1", "c,d,e")
@@ -233,7 +233,7 @@ class TestDFA(unittest.TestCase):
             states["G"]: {"a": states["F"], "b": states["C"]},
         }
 
-        non_minimized_dfa = DFA(states["A"], states, alphabet, transitions)
+        non_minimized_dfa = Dfa(states["A"], states, alphabet, transitions)
 
         minimized_states = {
             "A,D": State("A,D"),
@@ -266,7 +266,7 @@ class TestDFA(unittest.TestCase):
             },
         }
 
-        minimized_dfa = DFA(
+        minimized_dfa = Dfa(
             minimized_states["A,D"], minimized_states, alphabet, minimized_transitions
         )
 

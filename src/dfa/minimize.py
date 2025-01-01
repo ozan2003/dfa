@@ -3,11 +3,11 @@ This is the implementation file of DFA minimization algorithm.
 """
 
 from typing import Optional
-from .dfa import DFA
+from .dfa import Dfa
 from .state import State
 
 
-def minimize(dfa: DFA) -> DFA:
+def minimize(dfa: Dfa) -> Dfa:
     """
     Minimize the DFA.
     The algorithm used here is the Hopcroft's algorithm[1].
@@ -107,4 +107,4 @@ def minimize(dfa: DFA) -> DFA:
 
     new_start_state: State = new_states[f"s{state_map[dfa.starting_state]}"]
 
-    return DFA(new_start_state, new_states, dfa.alphabet, new_transition_table)
+    return Dfa(new_start_state, new_states, dfa.alphabet, new_transition_table)

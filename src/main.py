@@ -26,7 +26,7 @@ def main():
         states["7"]: {"a": states["6"], "b": states["7"]},
     }
 
-    non_minimized_dfa = DFA(states["1"], states, alphabet, transitions)
+    non_minimized_dfa = Dfa(states["1"], states, alphabet, transitions)
 
     print(f"Non-minimized DFA: {non_minimized_dfa}")
 
