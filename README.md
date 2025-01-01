@@ -5,7 +5,7 @@ This module is dedicated to the implementation of a Deterministic Finite Automat
 ## How to use
 
 ```python
-from dfa import DFA, State
+from dfa import Dfa, State
 
 # Define the alphabet.
 alphabet = set("01")
@@ -23,13 +23,28 @@ transitions = {
 }
 
 # Create the DFA.
-dfa = DFA(states["s0"], states, alphabet, transitions)
+dfa = Dfa(states["s0"], states, alphabet, transitions)
 
 # Run a string.
 if dfa.run("010101"):
     print("Accepted")
 else:
     print("Rejected")
+```
+
+### JSON Serialization Example
+
+```python
+from pathlib import Path
+
+# Serialize the DFA to JSON.
+dfa.dump_json(Path("my_dfa.json"))
+
+# Load a DFA from JSON.
+loaded_dfa = Dfa.from_json(Path("my_dfa.json"))
+
+# The loaded DFA works exactly like the original.
+assert loaded_dfa.run("010101") == dfa.run("010101")
 ```
 
 ## Dependencies
@@ -40,3 +55,4 @@ else:
 
 - Running arbitrary strings
 - Minimization
+- JSON serialization/deserialization
