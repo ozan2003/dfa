@@ -25,7 +25,7 @@ class Dfa:
     pass it to the DFA constructor to avoid cluttering the code.
 
     Example:
-        >>> alphabet = set("01")
+        >>> alphabet = frozenset("01")
         >>> states = {"s0": State("s0", True), "s1": State("s1")}
         >>> transitions = {
         ...     states["s0"]: {"0": states["s0"], "1": states["s1"]},
