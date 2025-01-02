@@ -2,6 +2,12 @@
 
 This module is dedicated to the implementation of a Deterministic Finite Automaton (DFA) in Python.
 
+## Supported operations
+
+- Running arbitrary strings
+- Minimization
+- JSON serialization/deserialization
+
 ## How to use
 
 ```python
@@ -50,9 +56,3 @@ assert loaded_dfa.run("010101") == dfa.run("010101")
 ## Dependencies
 
 - Python 3.9 or higher
-
-## Supported operations
-
-- Running arbitrary strings
-- Minimization
-- JSON serialization/deserialization
