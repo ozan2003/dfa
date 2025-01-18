@@ -9,7 +9,7 @@ Classes:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Any, Optional
 import json
 from pathlib import Path
 
@@ -307,7 +307,7 @@ class Dfa:
             None
         """
         # Convert the DFA to a serializable dictionary
-        dfa_dict = {
+        dfa_dict: dict[str, Any] = {
             "starting_state": self.starting_state.name,  # Just store the name
             "states": {
                 name: {"name": state.name, "is_accepting": state.is_accepting}
