@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 import json
 from pathlib import Path
+from collections import deque
 
 from .state import State
 
@@ -361,3 +362,106 @@ class Dfa:
             alphabet=set(data["alphabet"]),
             transition_table=transition_table,
         )
+
+    def intersection(self, other: "Dfa") -> "Dfa":
+        """
+        Compute the intersection of two DFAs using product construction.
+
+        Args:
+            other (Dfa): The other DFA to intersect with.
+
+        Returns:
+            Dfa: The DFA resulting from the intersection of the two DFAs.
+
+        Raises:
+            ValueError: If the alphabets of the two DFAs are not the same.
+        """
+        if self.alphabet != other.alphabet:
+            raise ValueError("Alphabets of the two DFAs are not the same.")
+
+        new_states: dict[str, State] = {}
+
+        def make_state_name(q1: State, q2: State) -> str:
+            """
+            Function to generate state names and maintain consistent naming.
+
+            Args:
+                q1 (State): The first state.
+                q2 (State): The second state.
+
+            Returns:
+                str: The name of the state. Format: (q1.name,q2.name)
+            """
+            return f"({q1.name},{q2.name})"
+
+        # Create the starting state.
+        start_state_name = make_state_name(self.starting_state, other.starting_state)
+        start_state = State(
+            start_state_name,
+            self.starting_state.is_accepting and other.starting_state.is_accepting,
+        )
+        new_states[start_state_name] = start_state
+
+        # Initialize the work queue with unprocessed state pairs.
+        unprocessed_pairs: deque[tuple[State, State]] = deque(
+            [(self.starting_state, other.starting_state)]
+        )
+        processed_pairs: set[tuple[State, State]] = set()
+
+        # Initialize the transition table for the new DFA.
+        new_transitions: dict[State, dict[str, State]] = {}
+
+        # Process all reachable state pairs.
+        while unprocessed_pairs:
+            current_q1, current_q2 = unprocessed_pairs.popleft()
+            if (current_q1, current_q2) in processed_pairs:
+                continue
+
+            processed_pairs.add((current_q1, current_q2))
+
+            current_state_name = make_state_name(current_q1, current_q2)
+            current_state = new_states[current_state_name]
+
+            # Initialize transitions for current state.
+            new_transitions[current_state] = {}
+
+            # For each symbol in the alphabet...
+            for symbol in self.alphabet:
+                # Only process if both DFAs have transitions for this symbol.
+                if (
+                    symbol in self.transition_table[current_q1]
+                    and symbol in other.transition_table[current_q2]
+                ):
+                    # Get next states in both DFAs.
+                    next_q1 = self.transition_table[current_q1][symbol]
+                    next_q2 = other.transition_table[current_q2][symbol]
+
+                    # Create new state name for the pair.
+                    next_state_name = make_state_name(next_q1, next_q2)
+
+                    # Create new state if we haven't seen it before.
+                    if next_state_name not in new_states:
+                        new_states[next_state_name] = State(
+                            next_state_name,
+                            next_q1.is_accepting and next_q2.is_accepting,
+                        )
+                        unprocessed_pairs.append((next_q1, next_q2))
+
+                    # Add transition.
+                    new_transitions[current_state][symbol] = new_states[next_state_name]
+
+        return Dfa(
+            starting_state=start_state,
+            states=new_states,
+            alphabet=self.alphabet,
+            transition_table=new_transitions,
+        )
+
+    def __and__(self, other: "Dfa") -> "Dfa":
+        """
+        Shorthand for the `intersection` method.
+        """
+        return self.intersection(other)
+    
+    def __rand__(self, other: "Dfa") -> "Dfa":
+        return self & other

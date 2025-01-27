@@ -296,6 +296,122 @@ class TestDFA(unittest.TestCase):
             loaded_dfa = Dfa.from_json(temp_path)
             self.assertEqual(dfa, loaded_dfa)
 
+    # Test DFA intersection operation.
+    def test_intersection(self):
+        alphabet = set("01")
+        # DFA that accepts strings containing a 1.
+        states_1 = {
+            "p": State("p"),
+            "q": State("q", True),
+        }
+
+        dfa1 = Dfa(states_1["p"], states_1, alphabet)
+
+        dfa1.add_transition("p", "0", "q")
+        dfa1.add_transition("p", "1", "p")
+        dfa1.add_transition("q", "0", "q")
+        dfa1.add_transition("q", "1", "q")
+
+        states_2 = {
+            "r": State("r"),
+            "s": State("s", True),
+        }
+
+        # DFA that accepts strings containing a 0.
+        dfa2 = Dfa(states_2["r"], states_2, alphabet)
+
+        dfa2.add_transition("r", "0", "r")
+        dfa2.add_transition("r", "1", "s")
+        dfa2.add_transition("s", "0", "s")
+        dfa2.add_transition("s", "1", "s")
+
+        # Supposedly intersection DFA by algorithm.
+        intersection = dfa1.intersection(dfa2)
+
+        # Handmade intersection DFA.
+        states_intersection = {
+            "p,r": State("p,r"),
+            "p,s": State("p,s"),
+            "q,r": State("q,r"),
+            "q,s": State("q,s", True),
+        }
+
+        intersected_by_hand_dfa = Dfa(
+            states_intersection["p,r"], states_intersection, alphabet
+        )
+
+        intersected_by_hand_dfa.add_transition("p,r", "0", "q,r")
+        intersected_by_hand_dfa.add_transition("p,r", "1", "p,s")
+        intersected_by_hand_dfa.add_transition("p,s", "0", "q,s")
+        intersected_by_hand_dfa.add_transition("p,s", "1", "p,s")
+        intersected_by_hand_dfa.add_transition("q,r", "0", "q,r")
+        intersected_by_hand_dfa.add_transition("q,r", "1", "q,s")
+        intersected_by_hand_dfa.add_transition("q,s", "0", "q,s")
+        intersected_by_hand_dfa.add_transition("q,s", "1", "q,s")
+
+        self.assertEqual(intersection, intersected_by_hand_dfa)
+
+    def test_intersection2(self):
+        # https://cs.stackexchange.com/a/7108
+        alphabet = set("01")
+
+        # DFA that accepts strings containing odd number of 1s.
+        states_1 = {
+            "x0": State("x0"),
+            "x1": State("x1", True),
+        }
+
+        dfa1 = Dfa(states_1["x0"], states_1, alphabet)
+
+        dfa1.add_transition("x0", "0", "x0")
+        dfa1.add_transition("x0", "1", "x1")
+
+        dfa1.add_transition("x1", "0", "x1")
+        dfa1.add_transition("x1", "1", "x0")
+
+        # DFA that accepts strings containing odd number of characters.
+        states_2 = {
+            "y0": State("y0", True),
+            "y1": State("y1"),
+        }
+
+        dfa2 = Dfa(states_2["y0"], states_2, alphabet)
+
+        dfa2.add_transition("y0", "0", "y1")
+        dfa2.add_transition("y0", "1", "y1")
+
+        dfa2.add_transition("y1", "0", "y0")
+        dfa2.add_transition("y1", "1", "y0")
+
+        # Supposedly intersection DFA by algorithm.
+        intersection = dfa1.intersection(dfa2)
+
+        # Handmade intersection DFA.
+        states_intersection = {
+            "x0,y0": State("x0,y0"),
+            "x0,y1": State("x0,y1"),
+            "x1,y0": State("x1,y0", True),
+            "x1,y1": State("x1,y1"),
+        }
+
+        intersected_by_hand_dfa = Dfa(
+            states_intersection["x0,y0"], states_intersection, alphabet
+        )
+
+        intersected_by_hand_dfa.add_transition("x0,y0", "0", "x0,y1")
+        intersected_by_hand_dfa.add_transition("x0,y0", "1", "x1,y1")
+
+        intersected_by_hand_dfa.add_transition("x0,y1", "0", "x0,y0")
+        intersected_by_hand_dfa.add_transition("x0,y1", "1", "x1,y0")
+
+        intersected_by_hand_dfa.add_transition("x1,y0", "0", "x1,y1")
+        intersected_by_hand_dfa.add_transition("x1,y0", "1", "x0,y1")
+
+        intersected_by_hand_dfa.add_transition("x1,y1", "0", "x1,y0")
+        intersected_by_hand_dfa.add_transition("x1,y1", "1", "x0,y0")
+
+        self.assertEqual(intersection, intersected_by_hand_dfa)
+
 
 def main():
     unittest.main()
