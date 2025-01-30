@@ -371,8 +371,8 @@ class TestDFA(unittest.TestCase):
 
         # DFA that accepts strings containing odd number of characters.
         states_2 = {
-            "y0": State("y0", True),
-            "y1": State("y1"),
+            "y0": State("y0"),
+            "y1": State("y1", True),
         }
 
         dfa2 = Dfa(states_2["y0"], states_2, alphabet)
@@ -390,8 +390,8 @@ class TestDFA(unittest.TestCase):
         states_intersection = {
             "x0,y0": State("x0,y0"),
             "x0,y1": State("x0,y1"),
-            "x1,y0": State("x1,y0", True),
-            "x1,y1": State("x1,y1"),
+            "x1,y0": State("x1,y0"),
+            "x1,y1": State("x1,y1", True),
         }
 
         intersected_by_hand_dfa = Dfa(
