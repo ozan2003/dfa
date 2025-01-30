@@ -363,15 +363,16 @@ class Dfa:
             transition_table=transition_table,
         )
 
-    def intersection(self, other: "Dfa") -> "Dfa":
+    def __bin_op(self, other: "Dfa", op: Callable[[State, State], bool]) -> "Dfa":
         """
-        Compute the intersection of two DFAs using product construction.
+        Helper generic function to perform binary operations on two DFAs.
 
         Args:
-            other (Dfa): The other DFA to intersect with.
+            other (Dfa): The other DFA to perform the operation with.
+            op (Callable[[State, State], bool]): The binary operation to perform on the states.
 
         Returns:
-            Dfa: The DFA resulting from the intersection of the two DFAs.
+            Dfa: The resulting DFA after the binary operation.
 
         Raises:
             ValueError: If the alphabets of the two DFAs are not the same.
@@ -398,7 +399,7 @@ class Dfa:
         start_state_name = make_state_name(self.starting_state, other.starting_state)
         start_state = State(
             start_state_name,
-            self.starting_state.is_accepting and other.starting_state.is_accepting,
+            op(self.starting_state, other.starting_state),
         )
         new_states[start_state_name] = start_state
 
@@ -443,7 +444,7 @@ class Dfa:
                     if next_state_name not in new_states:
                         new_states[next_state_name] = State(
                             next_state_name,
-                            next_q1.is_accepting and next_q2.is_accepting,
+                            op(next_q1, next_q2),
                         )
                         unprocessed_pairs.append((next_q1, next_q2))
 
@@ -457,11 +458,26 @@ class Dfa:
             transition_table=new_transitions,
         )
 
+    def intersection(self, other: "Dfa") -> "Dfa":
+        """
+        Compute the intersection of two DFAs using product construction.
+
+        Args:
+            other (Dfa): The other DFA to intersect with.
+
+        Returns:
+            Dfa: The DFA resulting from the intersection of the two DFAs.
+
+        Raises:
+            ValueError: If the alphabets of the two DFAs are not the same.
+        """
+        return self.__bin_op(other, lambda q1, q2: q1.is_accepting and q2.is_accepting)
+
     def __and__(self, other: "Dfa") -> "Dfa":
         """
         Shorthand for the `intersection` method.
         """
         return self.intersection(other)
-    
+
     def __rand__(self, other: "Dfa") -> "Dfa":
         return self & other
