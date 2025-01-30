@@ -2,8 +2,6 @@
 This is the test file for the DFA module. It tests the DFA class and its methods,
 the way it handles edge cases,
 including empty strings, invalid symbols, invalid transitions.
-
-Various DFAs from the recent lectures may be tested here.
 """
 
 from src.dfa.dfa import Dfa
