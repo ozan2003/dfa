@@ -219,13 +219,15 @@ class Dfa:
             """
             state_to_index: dict[State, int] = {}
             index_to_state: dict[int, State] = {}
-            state_queue: list[State] = [dfa.starting_state]
+            #state_queue: list[State] = [dfa.starting_state]
+            state_queue: deque[State] = deque([dfa.starting_state])
             visited_states: set[State] = set()
 
             # BFS to assign indices.
             next_index = 0
             while len(state_queue) > 0:
-                state = state_queue.pop(0)
+                #state = state_queue.pop(0)
+                state = state_queue.popleft()
                 if state in visited_states:
                     continue
                 visited_states.add(state)
