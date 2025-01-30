@@ -7,6 +7,7 @@ This module is dedicated to the implementation of a Deterministic Finite Automat
 - Running arbitrary strings
 - Minimization
 - Intersection
+- Union
 - JSON serialization/deserialization
 
 ## How to use
