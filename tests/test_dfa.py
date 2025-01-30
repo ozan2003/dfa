@@ -412,6 +412,65 @@ class TestDFA(unittest.TestCase):
 
         self.assertEqual(intersection, intersected_by_hand_dfa)
 
+    # Test DFA union operation.
+    def test_union(self):
+        alphabet = set("01")
+
+        # DFA that accepts strings containing even number of 1s.
+        states_1 = {
+            "q_even": State("q_even", True),
+            "q_odd": State("q_odd"),
+        }
+
+        dfa1 = Dfa(states_1["q_even"], states_1, alphabet)
+
+        dfa1.add_transition("q_even", "0", "q_even")
+        dfa1.add_transition("q_even", "1", "q_odd")
+
+        dfa1.add_transition("q_odd", "0", "q_odd")
+        dfa1.add_transition("q_odd", "1", "q_even")
+
+        # DFA that accepts strings containing even number of characters.
+        states_2 = {
+            "q_even": State("q_even", True),
+            "q_odd": State("q_odd"),
+        }
+
+        dfa2 = Dfa(states_2["q_even"], states_2, alphabet)
+
+        dfa2.add_transition("q_even", "0", "q_odd")
+        dfa2.add_transition("q_even", "1", "q_odd")
+
+        dfa2.add_transition("q_odd", "0", "q_even")
+        dfa2.add_transition("q_odd", "1", "q_even")
+
+        # Supposedly union DFA by algorithm.
+        union = dfa1.union(dfa2)
+
+        # Handmade union DFA.
+        states_union = {
+            "q_even,q_even": State("q_even,q_even", True),
+            "q_even,q_odd": State("q_even,q_odd", True),
+            "q_odd,q_even": State("q_odd,q_even", True),
+            "q_odd,q_odd": State("q_odd,q_odd"),
+        }
+
+        union_by_hand_dfa = Dfa(states_union["q_even,q_even"], states_union, alphabet)
+
+        union_by_hand_dfa.add_transition("q_even,q_even", "0", "q_odd,q_even")
+        union_by_hand_dfa.add_transition("q_even,q_even", "1", "q_odd,q_odd")
+
+        union_by_hand_dfa.add_transition("q_even,q_odd", "0", "q_odd,q_odd")
+        union_by_hand_dfa.add_transition("q_even,q_odd", "1", "q_odd,q_even")
+
+        union_by_hand_dfa.add_transition("q_odd,q_even", "0", "q_even,q_even")
+        union_by_hand_dfa.add_transition("q_odd,q_even", "1", "q_even,q_odd")
+
+        union_by_hand_dfa.add_transition("q_odd,q_odd", "0", "q_even,q_odd")
+        union_by_hand_dfa.add_transition("q_odd,q_odd", "1", "q_even,q_even")
+
+        self.assertEqual(union, union_by_hand_dfa)
+
 
 def main():
     unittest.main()

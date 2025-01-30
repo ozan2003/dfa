@@ -9,7 +9,7 @@ Classes:
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 import json
 from pathlib import Path
 from collections import deque
@@ -481,3 +481,28 @@ class Dfa:
 
     def __rand__(self, other: "Dfa") -> "Dfa":
         return self & other
+
+    def union(self, other: "Dfa") -> "Dfa":
+        """
+        Compute the union of two DFAs using product construction.
+
+        Args:
+            other (Dfa): The other DFA to union with.
+
+        Returns:
+            Dfa: The DFA resulting from the union of the two DFAs.
+
+        Raises:
+            ValueError: If the alphabets of the two DFAs are not the same.
+        """
+        return self.__bin_op(other, lambda q1, q2: q1.is_accepting or q2.is_accepting)
+
+    def __or__(self, other: "Dfa") -> "Dfa":
+        """
+        Shorthand for the `union` method.
+        """
+        return self.union(other)
+
+    def __ror__(self, other: "Dfa") -> "Dfa":
+        return self | other
+    
