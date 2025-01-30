@@ -202,7 +202,9 @@ class Dfa:
             return False
 
         # Step 2: Canonicalize both DFAs.
-        def canonical_form(dfa: Dfa) -> tuple[dict[State, int], dict[int, State]]:
+        def canonical_form(
+            dfa: Dfa,
+        ) -> dict[State, int]:  # tuple[dict[State, int], dict[int, State]]:
             """
             Computes the canonical form of a given DFA (Deterministic Finite Automaton).
 
@@ -218,21 +220,19 @@ class Dfa:
                     - index_to_state: A dictionary mapping each index back to its corresponding state.
             """
             state_to_index: dict[State, int] = {}
-            index_to_state: dict[int, State] = {}
-            #state_queue: list[State] = [dfa.starting_state]
+            # index_to_state: dict[int, State] = {}
             state_queue: deque[State] = deque([dfa.starting_state])
             visited_states: set[State] = set()
 
             # BFS to assign indices.
             next_index = 0
             while len(state_queue) > 0:
-                #state = state_queue.pop(0)
                 state = state_queue.popleft()
                 if state in visited_states:
                     continue
                 visited_states.add(state)
                 state_to_index[state] = next_index
-                index_to_state[next_index] = state
+                # index_to_state[next_index] = state
                 next_index += 1
 
                 # Enqueue transitions.
@@ -243,7 +243,7 @@ class Dfa:
                         if next_state not in visited_states:
                             state_queue.append(next_state)
 
-            return state_to_index, index_to_state
+            return state_to_index  # , index_to_state
 
         def get_canonical_transitions(
             dfa: Dfa, state_to_index: dict[State, int]
@@ -271,8 +271,10 @@ class Dfa:
 
             return canonical_transitions
 
-        state_to_index_self, _ = canonical_form(self)
-        state_to_index_other, _ = canonical_form(other)
+        # state_to_index_self, _ = canonical_form(self)
+        # state_to_index_other, _ = canonical_form(other)
+        state_to_index_self = canonical_form(self)
+        state_to_index_other = canonical_form(other)
 
         # Step 3: Compare canonical forms
         if len(state_to_index_self) != len(state_to_index_other):
@@ -507,4 +509,3 @@ class Dfa:
 
     def __ror__(self, other: "Dfa") -> "Dfa":
         return self | other
-    
