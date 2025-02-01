@@ -21,6 +21,8 @@ def minimize(dfa: Dfa) -> Dfa:
     Returns:
         DFA: The minimized DFA.
     """
+    new_state_name = "s{number}" # Template for new state names.
+
     # Step 1: Initial partition of states into accepting and non-accepting states.
     accepting_states: set[State] = {
         state for state in dfa.states.values() if state.is_accepting
@@ -85,9 +87,11 @@ def minimize(dfa: Dfa) -> Dfa:
         for partition_index, group in enumerate(state_partition)
         for state in group
     }
+    
     new_states: dict[str, State] = {
-        f"s{partition_index}": State(
-            f"s{partition_index}", any(s.is_accepting for s in group)
+        new_state_name.format(number=partition_index): State(
+            new_state_name.format(number=partition_index),
+            any(s.is_accepting for s in group),
         )
         for partition_index, group in enumerate(state_partition)
     }
@@ -96,15 +100,20 @@ def minimize(dfa: Dfa) -> Dfa:
     for partition_index, group in enumerate(state_partition):
         # Pick an arbitrary state from the group.
         representative: State = next(iter(group))
-        new_state: State = new_states[f"s{partition_index}"]
+        new_state: State = new_states[new_state_name.format(number=partition_index)]
         new_transition_table[new_state] = {}
 
         for symbol in dfa.alphabet:
             if symbol in dfa.transition_table[representative]:
                 target_state: State = dfa.transition_table[representative][symbol]
                 target_group: int = state_map[target_state]
-                new_transition_table[new_state][symbol] = new_states[f"s{target_group}"]
+                
+                new_transition_table[new_state][symbol] = new_states[
+                    new_state_name.format(number=target_group)
+                ]
 
-    new_start_state: State = new_states[f"s{state_map[dfa.starting_state]}"]
+    new_start_state: State = new_states[
+        new_state_name.format(number=state_map[dfa.starting_state])
+    ]
 
     return Dfa(new_start_state, new_states, dfa.alphabet, new_transition_table)
