@@ -1,6 +1,5 @@
 from dfa.dfa import Dfa, State
 from dfa.minimize import minimize
-from pathlib import Path
 
 def main():
     # Vizede sorulan DFA.
