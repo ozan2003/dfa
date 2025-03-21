@@ -16,20 +16,21 @@ minver:
 
 	vermin --backport dataclasses --backport typing --no-parse-comments --eval-annotations .
 
-# Run tests with unittest.
+# Run tests with pytest.
 test:
-	$(PYTHON) -m unittest -vv
+	$(PYTHON) -m pytest -v
 
 # Clean up Python cache files.
 clean:
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
+	rm -r .pytest_cache
 
 help:
 	@echo "Usage: make [target]"
 	@echo "Targets:"
 	@echo "   run      Run the main program."
-	@echo "   test     Run tests with unittest."
+	@echo "   test     Run tests with pytest."
 	@echo "   clean    Clean up Python cache files."
 	@echo "   minver   Check the minimum Python version required. (requires vermin)"
 	@echo "   help     Show this help message."

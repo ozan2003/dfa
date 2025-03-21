@@ -8,12 +8,12 @@ from src.dfa.dfa import Dfa
 from src.dfa.state import State
 from src.dfa.minimize import minimize
 
-import unittest
+import pytest
 import tempfile
 from pathlib import Path
 
 
-class TestDFA(unittest.TestCase):
+class TestDFA:
     def test_empty_string(self):
         alphabet = set("01")
         states = {"s0": State("s0", True), "s1": State("s1")}
@@ -22,7 +22,7 @@ class TestDFA(unittest.TestCase):
 
         dfa = Dfa(starting_state, states, alphabet)
 
-        self.assertEqual(dfa.run(""), starting_state.is_accepting)
+        assert dfa.run("") == starting_state.is_accepting
 
     def test_multiples_of_three(self):
         alphabet = set("01")
@@ -46,11 +46,11 @@ class TestDFA(unittest.TestCase):
 
         # Check for multiples of three.
         for num in multiples_of_three:
-            self.assertTrue(dfa.run(num))
+            assert dfa.run(num)
 
         # Check for non-multiples of three. Make sure the DFA rejects them.
-        self.assertFalse(dfa.run(bin(5)[2:]))
-        self.assertFalse(dfa.run(bin(45773)[2:]))
+        assert not dfa.run(bin(5)[2:])
+        assert not dfa.run(bin(45773)[2:])
 
     def test_invalid_symbol(self):
         alphabet = set("01")
@@ -58,7 +58,7 @@ class TestDFA(unittest.TestCase):
 
         dfa = Dfa(states["s0"], states, alphabet)
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             dfa.run("2")
 
     def test_dfa_equivalence(self):
@@ -80,7 +80,7 @@ class TestDFA(unittest.TestCase):
         dfa2.add_transition("q1", "0", "q1")
         dfa2.add_transition("q1", "1", "q0")
 
-        self.assertEqual(dfa1, dfa2)
+        assert dfa1 == dfa2
 
     def test_invalid_transition(self):
         alphabet = set("01")
@@ -89,7 +89,7 @@ class TestDFA(unittest.TestCase):
 
         dfa = Dfa(s0, {"s0": s0, "s1": s1}, alphabet)
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             dfa.add_transition("s0", "2", "s1")
 
     def test_same_transition_twice(self):
@@ -101,7 +101,7 @@ class TestDFA(unittest.TestCase):
 
         dfa.add_transition("s0", "0", "s1")
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             dfa.add_transition("s0", "0", "s0")
 
     def test_odd_ones(self):
@@ -118,13 +118,13 @@ class TestDFA(unittest.TestCase):
         dfa.add_transition("E", "0", "E")
         dfa.add_transition("E", "1", "D")
 
-        self.assertTrue(dfa.run("1"))
-        self.assertTrue(dfa.run("1101"))
-        self.assertTrue(dfa.run("1101101"))
+        assert dfa.run("1")
+        assert dfa.run("1101")
+        assert dfa.run("1101101")
 
-        self.assertFalse(dfa.run("11"))
-        self.assertFalse(dfa.run("11011"))
-        self.assertFalse(dfa.run("000000"))
+        assert not dfa.run("11")
+        assert not dfa.run("11011")
+        assert not dfa.run("000000")
 
     def test_add_state(self):
         alphabet: set[str] = set()
@@ -136,17 +136,17 @@ class TestDFA(unittest.TestCase):
         dfa.add_state("s1")
 
         # Check if the state was added.
-        self.assertIn("s1", dfa.states)
-        self.assertEqual(dfa.states["s1"].name, "s1")
-        self.assertFalse(dfa.states["s1"].is_accepting)
+        assert "s1" in dfa.states
+        assert dfa.states["s1"].name == "s1"
+        assert not dfa.states["s1"].is_accepting
 
         # Add another state.s
         dfa.add_state("s2", True)
 
         # Check if the state was added.
-        self.assertIn("s2", dfa.states)
-        self.assertEqual(dfa.states["s2"].name, "s2")
-        self.assertTrue(dfa.states["s2"].is_accepting)
+        assert "s2" in dfa.states
+        assert dfa.states["s2"].name == "s2"
+        assert dfa.states["s2"].is_accepting
 
     def test_minimize(self):
         # Check if the DFA is minimized correctly.
@@ -205,9 +205,7 @@ class TestDFA(unittest.TestCase):
         # Supposedly minimized DFA by the algorithm.
         supposedly_minimized_dfa = minimize(non_minimized_dfa)
 
-        self.assertEqual(
-            minimized_dfa, supposedly_minimized_dfa, msg="DFA not minimized correctly."
-        )
+        assert minimized_dfa == supposedly_minimized_dfa
 
     def test_minimize_2(self):
         # Something more complex.
@@ -270,7 +268,7 @@ class TestDFA(unittest.TestCase):
             minimized_states["A,D"], minimized_states, alphabet, minimized_transitions
         )
 
-        self.assertEqual(minimized_dfa, minimize(non_minimized_dfa))
+        assert minimized_dfa == minimize(non_minimized_dfa)
 
     # Test JSON serialization.
     def test_dump_json(self):
@@ -292,7 +290,7 @@ class TestDFA(unittest.TestCase):
 
             # Test loading back produces equivalent DFA.
             loaded_dfa = Dfa.from_json(temp_path)
-            self.assertEqual(dfa, loaded_dfa)
+            assert dfa == loaded_dfa
 
     # Test DFA intersection operation.
     def test_intersection(self):
@@ -347,7 +345,7 @@ class TestDFA(unittest.TestCase):
         intersected_by_hand_dfa.add_transition("q,s", "0", "q,s")
         intersected_by_hand_dfa.add_transition("q,s", "1", "q,s")
 
-        self.assertEqual(intersection, intersected_by_hand_dfa)
+        assert intersection == intersected_by_hand_dfa
 
     def test_intersection2(self):
         # https://cs.stackexchange.com/a/7108
@@ -408,7 +406,7 @@ class TestDFA(unittest.TestCase):
         intersected_by_hand_dfa.add_transition("x1,y1", "0", "x1,y0")
         intersected_by_hand_dfa.add_transition("x1,y1", "1", "x0,y0")
 
-        self.assertEqual(intersection, intersected_by_hand_dfa)
+        assert intersection == intersected_by_hand_dfa
 
     # Test DFA union operation.
     def test_union(self):
@@ -467,12 +465,4 @@ class TestDFA(unittest.TestCase):
         union_by_hand_dfa.add_transition("q_odd,q_odd", "0", "q_even,q_odd")
         union_by_hand_dfa.add_transition("q_odd,q_odd", "1", "q_even,q_even")
 
-        self.assertEqual(union, union_by_hand_dfa)
-
-
-def main():
-    unittest.main()
-
-
-if __name__ == "__main__":
-    main()
+        assert union == union_by_hand_dfa
