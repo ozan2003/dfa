@@ -8,11 +8,13 @@ Classes:
     DFA: A class representing a Deterministic Finite Automaton (DFA).
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+# ruff: noqa: FA102, FA100
+
 import json
-from pathlib import Path
 from collections import deque
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Callable, Optional
 
 from .state import State
 
@@ -41,6 +43,7 @@ class Dfa:
         alphabet (set[str] | frozenset[str]): The set of symbols that the DFA can recognize.
         transition_table (dict[State, dict[str, State]]):
             A `dict` mapping states to `dict`s that map symbols to the states they transition.
+
     """
 
     starting_state: State
@@ -56,7 +59,7 @@ class Dfa:
 
     def __str__(self) -> str:
         def transition_repr(transition: dict[str, State]) -> str:
-            return "{{{0}}}".format(
+            return "{{{}}}".format(
                 ", ".join(
                     f"{symbol!r} -> {state}" for symbol, state in transition.items()
                 )
@@ -80,6 +83,7 @@ class Dfa:
 
         Returns:
             Optional[State]: The `State` object if found, otherwise `None`.
+
         """
         return self.states.get(state_name, None)
 
@@ -93,8 +97,8 @@ class Dfa:
 
         Returns:
             None
-        """
 
+        """
         self.states[state_name] = State(state_name, is_accepting)
 
     def add_transition(
@@ -114,33 +118,34 @@ class Dfa:
         Raises:
             ValueError: If the `symbol` is not in the alphabet,
             or if the `from_state` or `to_state` are not in DFA's states.
+
         """
         # Check if the symbol is in the alphabet.
         if symbol not in self.alphabet:
-            raise ValueError(f"Symbol '{symbol}' not in {self.alphabet}.")
+            msg = f"Symbol '{symbol}' not in {self.alphabet}."
+            raise ValueError(msg)
 
         # Check if the states are in the DFA.
         if from_state_name not in self.states:
-            raise ValueError(f"State '{from_state_name}' not in states.")
+            msg = f"State '{from_state_name}' not in states."
+            raise ValueError(msg)
 
         if to_state_name not in self.states:
-            raise ValueError(f"State '{to_state_name}' not in states.")
+            msg = f"State '{to_state_name}' not in states."
+            raise ValueError(msg)
 
         # Check if the same transition from same state for the same symbol already exists.
-        # state = self.transition_table.get(self.states[from_state_name])
         if (
             state := self.transition_table.get(self.states[from_state_name])
         ) is not None and state.get(symbol) is not None:
-            raise ValueError(
-                f"Transition from '{from_state_name}' for the same symbol '{symbol}' already exists."
-            )
+            msg = f"Transition from '{from_state_name}' for the same symbol '{symbol}' already exists."
+            raise ValueError(msg)
 
         # Add the transition to the transition table.
         if self.states[from_state_name] not in self.transition_table:
             self.transition_table[self.states[from_state_name]] = {}
 
         # Add the symbol to the `from_state`'s transition.
-        # self.transition_table[self.states[from_state]][symbol] = self.states[to_state]
         self.transition_table[self.states[from_state_name]].update(
             {symbol: self.states[to_state_name]}
         )
@@ -157,13 +162,15 @@ class Dfa:
 
         Raises:
             ValueError: If the a symbol in the string is not in the alphabet.
+
         """
         current_state = self.starting_state
 
         for symbol in string:
             # Check if the symbol is in the alphabet.
             if symbol not in self.alphabet:
-                raise ValueError(f"Symbol '{symbol}' not in alphabet.")
+                msg = f"Symbol '{symbol}' not in alphabet."
+                raise ValueError(msg)
 
             # Go to the next state, or None if there is no transition.
             current_state = self.transition_table[current_state].get(symbol, None)
@@ -177,10 +184,11 @@ class Dfa:
         Get a state by name.
 
         Args:
-            name (str): The name of the state to retrieve.
+            state_name (str): The name of the state to retrieve.
 
         Returns:
             Optional[State]: The `State` object if found, otherwise `None`.
+
         """
         return self.get_state(state_name)
 
@@ -193,6 +201,7 @@ class Dfa:
 
         Returns:
             bool: True if the two DFA objects are equivalent, False otherwise.
+
         """
         if not isinstance(other, Dfa):
             return NotImplemented
@@ -218,9 +227,10 @@ class Dfa:
                 tuple[dict[State, int], dict[int, State]]:
                     - state_to_index: A dictionary mapping each state to a unique index.
                     - index_to_state: A dictionary mapping each index back to its corresponding state.
+
             """
             state_to_index: dict[State, int] = {}
-            # index_to_state: dict[int, State] = {}
+            # index_to_state: dict[int, State] = {}  # noqa: ERA001
             state_queue: deque[State] = deque([dfa.starting_state])
             visited_states: set[State] = set()
 
@@ -232,7 +242,7 @@ class Dfa:
                     continue
                 visited_states.add(state)
                 state_to_index[state] = next_index
-                # index_to_state[next_index] = state
+                # index_to_state[next_index] = state  # noqa: ERA001
                 next_index += 1
 
                 # Enqueue transitions.
@@ -259,6 +269,7 @@ class Dfa:
             Returns:
                 dict[int, dict[str, int]]: A canonical transition table where states
                 are represented by their indices.
+
             """
             canonical_transitions: dict[int, dict[str, int]] = {}
 
@@ -271,8 +282,8 @@ class Dfa:
 
             return canonical_transitions
 
-        # state_to_index_self, _ = canonical_form(self)
-        # state_to_index_other, _ = canonical_form(other)
+        # state_to_index_self, _ = canonical_form(self)  # noqa: ERA001
+        # state_to_index_other, _ = canonical_form(other)  # noqa: ERA001
         state_to_index_self = canonical_form(self)
         state_to_index_other = canonical_form(other)
 
@@ -310,6 +321,7 @@ class Dfa:
 
         Returns:
             None
+
         """
         # Convert the DFA to a serializable dictionary
         dfa_dict: dict[str, Any] = {
@@ -327,7 +339,6 @@ class Dfa:
                 for from_state, transitions in self.transition_table.items()
             },
         }
-        # json.dump(dfa_dict, path.open("w"), indent=2)
         with path.open("w") as file:
             json.dump(dfa_dict, file, indent=2)
 
@@ -341,6 +352,7 @@ class Dfa:
 
         Returns:
             Dfa: The DFA object loaded from the JSON file.
+
         """
         with path.open("r") as file:
             data = json.load(file)
@@ -380,9 +392,11 @@ class Dfa:
 
         Raises:
             ValueError: If the alphabets of the two DFAs are not the same.
+
         """
         if self.alphabet != other.alphabet:
-            raise ValueError("Alphabets of the two DFAs are not the same.")
+            msg = "Alphabets of the two DFAs are not the same."
+            raise ValueError(msg)
 
         new_states: dict[str, State] = {}
 
@@ -396,6 +410,7 @@ class Dfa:
 
             Returns:
                 str: The name of the state. Format: (q1.name,q2.name)
+
             """
             return f"({q1.name},{q2.name})"
 
@@ -474,6 +489,7 @@ class Dfa:
 
         Raises:
             ValueError: If the alphabets of the two DFAs are not the same.
+
         """
         return self.__bin_op(other, lambda q1, q2: q1.is_accepting and q2.is_accepting)
 
@@ -498,6 +514,7 @@ class Dfa:
 
         Raises:
             ValueError: If the alphabets of the two DFAs are not the same.
+
         """
         return self.__bin_op(other, lambda q1, q2: q1.is_accepting or q2.is_accepting)
 
@@ -524,7 +541,9 @@ class Dfa:
             ValueError: If the alphabets of the two DFAs are not the same.
 
         """
-        return self.__bin_op(other, lambda q1, q2: q1.is_accepting and not q2.is_accepting)
+        return self.__bin_op(
+            other, lambda q1, q2: q1.is_accepting and not q2.is_accepting
+        )
 
     def __sub__(self, other: "Dfa") -> "Dfa":
         """
