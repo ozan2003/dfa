@@ -1,6 +1,7 @@
 from dfa.dfa import Dfa, State
 from dfa.minimize import minimize
 
+
 def main():
     # Vizede sorulan DFA.
     alphabet = set("ab")
