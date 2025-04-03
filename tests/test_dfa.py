@@ -1,16 +1,17 @@
 """
-This is the test file for the DFA module. It tests the DFA class and its methods,
+The test file for the DFA module. Tests the DFA class and its methods,
 the way it handles edge cases,
 including empty strings, invalid symbols, invalid transitions.
 """
 
-from src.dfa.dfa import Dfa
-from src.dfa.state import State
-from src.dfa.minimize import minimize
-
-import pytest
 import tempfile
 from pathlib import Path
+
+import pytest
+
+from src.dfa.dfa import Dfa
+from src.dfa.minimize import minimize
+from src.dfa.state import State
 
 
 class TestDFA:

@@ -8,8 +8,6 @@ Classes:
     DFA: A class representing a Deterministic Finite Automaton (DFA).
 """
 
-# ruff: noqa: FA102, FA100
-
 import json
 from collections import deque
 from dataclasses import dataclass, field
@@ -87,7 +85,7 @@ class Dfa:
         """
         return self.states.get(state_name, None)
 
-    def add_state(self, state_name: str, is_accepting: bool = False) -> None:
+    def add_state(self, state_name: str, is_accepting: bool = False) -> None:  # noqa: FBT001, FBT002
         """
         Add a new state to the DFA.
 

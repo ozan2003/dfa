@@ -13,6 +13,7 @@ class State(NamedTuple):
     Attributes:
         name (str): The name of the state.
         is_accepting (bool): Indicates if the state is an accepting state.
+
     """
 
     name: str

@@ -45,6 +45,11 @@
         "TD002",
         "TD003",
         "FIX002", // too verbose descriptions of todos
-        "T201"
+        "T201",
+        "FA102",
+        "FA100",
+        "S101",
+        "FBT003",
+        "PT011"
     ]
 }

@@ -1,8 +1,9 @@
 """
-This is the implementation file of DFA minimization algorithm.
+Implementation file of DFA minimization algorithm.
 """
 
 from typing import Optional
+
 from .dfa import Dfa
 from .state import State
 
@@ -20,8 +21,9 @@ def minimize(dfa: Dfa) -> Dfa:
 
     Returns:
         DFA: The minimized DFA.
+
     """
-    new_state_name = "s{number}" # Template for new state names.
+    new_state_name = "s{number}"  # Template for new state names.
 
     # Step 1: Initial partition of states into accepting and non-accepting states.
     accepting_states: set[State] = {
@@ -43,6 +45,7 @@ def minimize(dfa: Dfa) -> Dfa:
 
         Returns:
             int: The index of the group that contains the state, or `None` if the state isn't found in any group.
+
         """
         for partition_index, group in enumerate(partition):
             if state in group:
@@ -87,7 +90,7 @@ def minimize(dfa: Dfa) -> Dfa:
         for partition_index, group in enumerate(state_partition)
         for state in group
     }
-    
+
     new_states: dict[str, State] = {
         new_state_name.format(number=partition_index): State(
             new_state_name.format(number=partition_index),
@@ -107,7 +110,7 @@ def minimize(dfa: Dfa) -> Dfa:
             if symbol in dfa.transition_table[representative]:
                 target_state: State = dfa.transition_table[representative][symbol]
                 target_group: int = state_map[target_state]
-                
+
                 new_transition_table[new_state][symbol] = new_states[
                     new_state_name.format(number=target_group)
                 ]
