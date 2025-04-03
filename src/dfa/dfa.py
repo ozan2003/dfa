@@ -509,3 +509,28 @@ class Dfa:
 
     def __ror__(self, other: "Dfa") -> "Dfa":
         return self | other
+
+    def set_difference(self, other: "Dfa") -> "Dfa":
+        """
+        Compute the set difference of two DFAs using product construction.
+
+        Args:
+            other (Dfa): The other DFA to compute the set difference with.
+
+        Returns:
+            Dfa: The DFA resulting from the set difference of the two DFAs.
+
+        Raises:
+            ValueError: If the alphabets of the two DFAs are not the same.
+
+        """
+        return self.__bin_op(other, lambda q1, q2: q1.is_accepting and not q2.is_accepting)
+
+    def __sub__(self, other: "Dfa") -> "Dfa":
+        """
+        Shorthand for the `set_difference` method.
+        """
+        return self.set_difference(other)
+
+    def __rsub__(self, other: "Dfa") -> "Dfa":
+        return self - other
