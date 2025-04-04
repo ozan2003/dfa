@@ -51,5 +51,6 @@
         "S101",
         "FBT003",
         "PT011"
-    ]
+    ],
+    "ruff.lineLength": 79, // pep 8
 }

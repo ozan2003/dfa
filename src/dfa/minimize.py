@@ -32,7 +32,10 @@ def minimize(dfa: Dfa) -> Dfa:
     non_accepting_states: set[State] = {
         state for state in dfa.states.values() if not state.is_accepting
     }
-    state_partition: list[set[State]] = [accepting_states, non_accepting_states]
+    state_partition: list[set[State]] = [
+        accepting_states,
+        non_accepting_states,
+    ]
 
     # Helper function to find the group a state belongs to.
     def find_group(state: State, partition: list[set[State]]) -> Optional[int]:
@@ -44,7 +47,8 @@ def minimize(dfa: Dfa) -> Dfa:
             partition (list[set[State]]): A list of sets of group of states.
 
         Returns:
-            int: The index of the group that contains the state, or `None` if the state isn't found in any group.
+            int: The index of the group that contains the state,
+            or `None` if the state isn't found in any group.
 
         """
         for partition_index, group in enumerate(partition):
@@ -65,7 +69,10 @@ def minimize(dfa: Dfa) -> Dfa:
             split_groups: dict[tuple[Optional[int], ...], set[State]] = {}
             for state in group:
                 signature: tuple[Optional[int], ...] = tuple(
-                    find_group(dfa.transition_table[state][symbol], state_partition)
+                    find_group(
+                        dfa.transition_table[state][symbol],
+                        state_partition,
+                    )
                     if symbol in dfa.transition_table[state]
                     else None
                     for symbol in dfa.alphabet
@@ -103,12 +110,16 @@ def minimize(dfa: Dfa) -> Dfa:
     for partition_index, group in enumerate(state_partition):
         # Pick an arbitrary state from the group.
         representative: State = next(iter(group))
-        new_state: State = new_states[new_state_name.format(number=partition_index)]
+        new_state: State = new_states[
+            new_state_name.format(number=partition_index)
+        ]
         new_transition_table[new_state] = {}
 
         for symbol in dfa.alphabet:
             if symbol in dfa.transition_table[representative]:
-                target_state: State = dfa.transition_table[representative][symbol]
+                target_state: State = dfa.transition_table[representative][
+                    symbol
+                ]
                 target_group: int = state_map[target_state]
 
                 new_transition_table[new_state][symbol] = new_states[
@@ -119,4 +130,9 @@ def minimize(dfa: Dfa) -> Dfa:
         new_state_name.format(number=state_map[dfa.starting_state])
     ]
 
-    return Dfa(new_start_state, new_states, dfa.alphabet, new_transition_table)
+    return Dfa(
+        new_start_state,
+        new_states,
+        dfa.alphabet,
+        new_transition_table,
+    )

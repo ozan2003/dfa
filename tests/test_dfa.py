@@ -21,14 +21,20 @@ class TestDFA:
 
         starting_state = states["s0"]
 
-        dfa = Dfa(starting_state, states, alphabet)
+        dfa = Dfa(
+            starting_state,
+            states,
+            alphabet,
+        )
 
         assert dfa.run("") == starting_state.is_accepting
 
     def test_multiples_of_three(self):
         alphabet = set("01")
 
-        multiples_of_three = (bin(num)[2:] for num in range(100, 500) if num % 3 == 0)
+        multiples_of_three = (
+            bin(num)[2:] for num in range(100, 500) if num % 3 == 0
+        )
         # https://en.wikipedia.org/wiki/Deterministic_finite_automaton#/media/File:DFA_example_multiplies_of_3.svg
         states = {
             "s0": State("s0", True),
@@ -36,7 +42,11 @@ class TestDFA:
             "s2": State("s2"),
         }
 
-        dfa = Dfa(states["s0"], states, alphabet)
+        dfa = Dfa(
+            states["s0"],
+            states,
+            alphabet,
+        )
 
         dfa.add_transition("s0", "0", "s0")
         dfa.add_transition("s0", "1", "s1")
@@ -57,7 +67,11 @@ class TestDFA:
         alphabet = set("01")
         states = {"s0": State("s0", True), "s1": State("s1")}
 
-        dfa = Dfa(states["s0"], states, alphabet)
+        dfa = Dfa(
+            states["s0"],
+            states,
+            alphabet,
+        )
 
         with pytest.raises(ValueError):
             dfa.run("2")
@@ -67,14 +81,22 @@ class TestDFA:
         states1 = {"s0": State("s0", True), "s1": State("s1")}
         states2 = {"q0": State("q0", True), "q1": State("q1")}
 
-        dfa1 = Dfa(states1["s0"], states1, alphabet)
+        dfa1 = Dfa(
+            states1["s0"],
+            states1,
+            alphabet,
+        )
 
         dfa1.add_transition("s0", "0", "s1")
         dfa1.add_transition("s0", "1", "s0")
         dfa1.add_transition("s1", "0", "s1")
         dfa1.add_transition("s1", "1", "s0")
 
-        dfa2 = Dfa(states2["q0"], states2, alphabet)
+        dfa2 = Dfa(
+            states2["q0"],
+            states2,
+            alphabet,
+        )
 
         dfa2.add_transition("q0", "0", "q1")
         dfa2.add_transition("q0", "1", "q0")
@@ -88,7 +110,11 @@ class TestDFA:
         s0 = State("s0", True)
         s1 = State("s1")
 
-        dfa = Dfa(s0, {"s0": s0, "s1": s1}, alphabet)
+        dfa = Dfa(
+            s0,
+            {"s0": s0, "s1": s1},
+            alphabet,
+        )
 
         with pytest.raises(ValueError):
             dfa.add_transition("s0", "2", "s1")
@@ -111,7 +137,11 @@ class TestDFA:
 
         states = {"D": State("D"), "E": State("E", True)}
 
-        dfa = Dfa(states["D"], states, alphabet)
+        dfa = Dfa(
+            states["D"],
+            states,
+            alphabet,
+        )
 
         dfa.add_transition("D", "0", "D")
         dfa.add_transition("D", "1", "E")
@@ -131,7 +161,11 @@ class TestDFA:
         alphabet: set[str] = set()
         states = {"s0": State("s0", True)}
 
-        dfa = Dfa(states["s0"], states, alphabet)
+        dfa = Dfa(
+            states["s0"],
+            states,
+            alphabet,
+        )
 
         # Add a new state.
         dfa.add_state("s1")
@@ -164,7 +198,9 @@ class TestDFA:
         }
 
         non_minimized_dfa = Dfa(
-            non_minimized_states["a"], non_minimized_states, alphabet
+            non_minimized_states["a"],
+            non_minimized_states,
+            alphabet,
         )
 
         non_minimized_dfa.add_transition("a", "0", "b")
@@ -192,7 +228,11 @@ class TestDFA:
             "f": State("f"),
         }
 
-        minimized_dfa = Dfa(minimized_dfa_states["a,b"], minimized_dfa_states, alphabet)
+        minimized_dfa = Dfa(
+            minimized_dfa_states["a,b"],
+            minimized_dfa_states,
+            alphabet,
+        )
 
         minimized_dfa.add_transition("a,b", "0", "a,b")
         minimized_dfa.add_transition("a,b", "1", "c,d,e")
@@ -232,7 +272,12 @@ class TestDFA:
             states["G"]: {"a": states["F"], "b": states["C"]},
         }
 
-        non_minimized_dfa = Dfa(states["A"], states, alphabet, transitions)
+        non_minimized_dfa = Dfa(
+            states["A"],
+            states,
+            alphabet,
+            transitions,
+        )
 
         minimized_states = {
             "A,D": State("A,D"),
@@ -266,7 +311,10 @@ class TestDFA:
         }
 
         minimized_dfa = Dfa(
-            minimized_states["A,D"], minimized_states, alphabet, minimized_transitions
+            minimized_states["A,D"],
+            minimized_states,
+            alphabet,
+            minimized_transitions,
         )
 
         assert minimized_dfa == minimize(non_minimized_dfa)
@@ -276,7 +324,11 @@ class TestDFA:
         alphabet = set("01")
         states = {"s0": State("s0", True), "s1": State("s1")}
 
-        dfa = Dfa(states["s0"], states, alphabet)
+        dfa = Dfa(
+            states["s0"],
+            states,
+            alphabet,
+        )
         dfa.add_transition("s0", "0", "s1")
         dfa.add_transition("s0", "1", "s0")
         dfa.add_transition("s1", "0", "s1")
@@ -302,7 +354,11 @@ class TestDFA:
             "q": State("q", True),
         }
 
-        dfa1 = Dfa(states_1["p"], states_1, alphabet)
+        dfa1 = Dfa(
+            states_1["p"],
+            states_1,
+            alphabet,
+        )
 
         dfa1.add_transition("p", "0", "q")
         dfa1.add_transition("p", "1", "p")
@@ -315,7 +371,11 @@ class TestDFA:
         }
 
         # DFA that accepts strings containing a 0.
-        dfa2 = Dfa(states_2["r"], states_2, alphabet)
+        dfa2 = Dfa(
+            states_2["r"],
+            states_2,
+            alphabet,
+        )
 
         dfa2.add_transition("r", "0", "r")
         dfa2.add_transition("r", "1", "s")
@@ -334,7 +394,9 @@ class TestDFA:
         }
 
         intersected_by_hand_dfa = Dfa(
-            states_intersection["p,r"], states_intersection, alphabet
+            states_intersection["p,r"],
+            states_intersection,
+            alphabet,
         )
 
         intersected_by_hand_dfa.add_transition("p,r", "0", "q,r")
@@ -358,7 +420,11 @@ class TestDFA:
             "x1": State("x1", True),
         }
 
-        dfa1 = Dfa(states_1["x0"], states_1, alphabet)
+        dfa1 = Dfa(
+            states_1["x0"],
+            states_1,
+            alphabet,
+        )
 
         dfa1.add_transition("x0", "0", "x0")
         dfa1.add_transition("x0", "1", "x1")
@@ -372,7 +438,11 @@ class TestDFA:
             "y1": State("y1", True),
         }
 
-        dfa2 = Dfa(states_2["y0"], states_2, alphabet)
+        dfa2 = Dfa(
+            states_2["y0"],
+            states_2,
+            alphabet,
+        )
 
         dfa2.add_transition("y0", "0", "y1")
         dfa2.add_transition("y0", "1", "y1")
@@ -392,7 +462,9 @@ class TestDFA:
         }
 
         intersected_by_hand_dfa = Dfa(
-            states_intersection["x0,y0"], states_intersection, alphabet
+            states_intersection["x0,y0"],
+            states_intersection,
+            alphabet,
         )
 
         intersected_by_hand_dfa.add_transition("x0,y0", "0", "x0,y1")
@@ -419,7 +491,11 @@ class TestDFA:
             "q_odd": State("q_odd"),
         }
 
-        dfa1 = Dfa(states_1["q_even"], states_1, alphabet)
+        dfa1 = Dfa(
+            states_1["q_even"],
+            states_1,
+            alphabet,
+        )
 
         dfa1.add_transition("q_even", "0", "q_even")
         dfa1.add_transition("q_even", "1", "q_odd")
@@ -433,7 +509,11 @@ class TestDFA:
             "q_odd": State("q_odd"),
         }
 
-        dfa2 = Dfa(states_2["q_even"], states_2, alphabet)
+        dfa2 = Dfa(
+            states_2["q_even"],
+            states_2,
+            alphabet,
+        )
 
         dfa2.add_transition("q_even", "0", "q_odd")
         dfa2.add_transition("q_even", "1", "q_odd")
@@ -452,7 +532,11 @@ class TestDFA:
             "q_odd,q_odd": State("q_odd,q_odd"),
         }
 
-        union_by_hand_dfa = Dfa(states_union["q_even,q_even"], states_union, alphabet)
+        union_by_hand_dfa = Dfa(
+            states_union["q_even,q_even"],
+            states_union,
+            alphabet,
+        )
 
         union_by_hand_dfa.add_transition("q_even,q_even", "0", "q_odd,q_even")
         union_by_hand_dfa.add_transition("q_even,q_even", "1", "q_odd,q_odd")

@@ -47,9 +47,10 @@ class Dfa:
     starting_state: State
     states: dict[str, State]
     alphabet: set[str] | frozenset[str]
+    # q0 -> {"sigma" -> q1}
     transition_table: dict[State, dict[str, State]] = field(
         default_factory=dict
-    )  # q0 -> {"sigma" -> q1}
+    )
 
     def __post_init__(self):
         # Convert alphabet to frozenset for immutability and serializability.
@@ -59,7 +60,8 @@ class Dfa:
         def transition_repr(transition: dict[str, State]) -> str:
             return "{{{}}}".format(
                 ", ".join(
-                    f"{symbol!r} -> {state}" for symbol, state in transition.items()
+                    f"{symbol!r} -> {state}"
+                    for symbol, state in transition.items()
                 )
             )
 
@@ -68,9 +70,7 @@ class Dfa:
             for from_state, transitions in self.transition_table.items()
         )
 
-        return (
-            f"DFA(Starting state: {self.starting_state}, Σ: {self.alphabet}):\n{table}"
-        )
+        return f"DFA(Starting state: {self.starting_state}, Σ: {self.alphabet}):\n{table}"
 
     def get_state(self, state_name: str) -> Optional[State]:
         """
@@ -85,7 +85,11 @@ class Dfa:
         """
         return self.states.get(state_name, None)
 
-    def add_state(self, state_name: str, is_accepting: bool = False) -> None:  # noqa: FBT001, FBT002
+    def add_state(
+        self,
+        state_name: str,
+        is_accepting: bool = False,  # noqa: FBT001, FBT002
+    ) -> None:
         """
         Add a new state to the DFA.
 
@@ -100,7 +104,10 @@ class Dfa:
         self.states[state_name] = State(state_name, is_accepting)
 
     def add_transition(
-        self, from_state_name: str, symbol: str, to_state_name: str
+        self,
+        from_state_name: str,
+        symbol: str,
+        to_state_name: str,
     ) -> None:
         """
         Adds a transition for the given symbol to the specified state.
@@ -171,8 +178,12 @@ class Dfa:
                 raise ValueError(msg)
 
             # Go to the next state, or None if there is no transition.
-            current_state = self.transition_table[current_state].get(symbol, None)
-            # If the current state is None, the DFA is stuck and the string is not accepted.
+            current_state = self.transition_table[current_state].get(
+                symbol,
+                None,
+            )
+            # If the current state is None,
+            # the DFA is stuck and the string is not accepted.
             if current_state is None:
                 return False
         return current_state.is_accepting
@@ -215,16 +226,18 @@ class Dfa:
             """
             Computes the canonical form of a given DFA (Deterministic Finite Automaton).
 
-            This function assigns a unique index to each state in the DFA using a breadth-first search (BFS)
-            starting from the DFA's starting state.
+            This function assigns a unique index to each state in the DFA
+            using a breadth-first search (BFS) starting from the DFA's starting state.
 
             Args:
-                dfa (DFA): The deterministic finite automaton to be converted to its canonical form.
+                dfa (DFA): The deterministic finite automaton
+                to be converted to its canonical form.
 
             Returns:
                 tuple[dict[State, int], dict[int, State]]:
                     - state_to_index: A dictionary mapping each state to a unique index.
-                    - index_to_state: A dictionary mapping each index back to its corresponding state.
+                    - index_to_state: A dictionary mapping
+                                      each index back to its corresponding state.
 
             """
             state_to_index: dict[State, int] = {}
@@ -254,7 +267,8 @@ class Dfa:
             return state_to_index  # , index_to_state
 
         def get_canonical_transitions(
-            dfa: Dfa, state_to_index: dict[State, int]
+            dfa: Dfa,
+            state_to_index: dict[State, int],
         ) -> dict[int, dict[str, int]]:
             """
             Generate the canonical transitions for a given DFA.
@@ -302,10 +316,14 @@ class Dfa:
 
         # Compare accepting states.
         accepting_states_of_self = {
-            index for state, index in state_to_index_self.items() if state.is_accepting
+            index
+            for state, index in state_to_index_self.items()
+            if state.is_accepting
         }
         accepting_states_of_other = {
-            index for state, index in state_to_index_other.items() if state.is_accepting
+            index
+            for state, index in state_to_index_other.items()
+            if state.is_accepting
         }
 
         return accepting_states_of_self == accepting_states_of_other
@@ -328,7 +346,9 @@ class Dfa:
                 name: {"name": state.name, "is_accepting": state.is_accepting}
                 for name, state in self.states.items()
             },
-            "alphabet": tuple(self.alphabet),  # Convert set to tuple for serialization
+            "alphabet": tuple(
+                self.alphabet
+            ),  # Convert set to tuple for serialization
             "transition_table": {
                 from_state.name: {  # Use state names as keys
                     symbol: to_state.name  # Store state names instead of State objects
@@ -377,7 +397,9 @@ class Dfa:
             transition_table=transition_table,
         )
 
-    def __bin_op(self, other: "Dfa", op: Callable[[State, State], bool]) -> "Dfa":
+    def __bin_op(
+        self, other: "Dfa", op: Callable[[State, State], bool]
+    ) -> "Dfa":
         """
         Helper generic function to perform binary operations on two DFAs.
 
@@ -413,7 +435,9 @@ class Dfa:
             return f"({q1.name},{q2.name})"
 
         # Create the starting state.
-        start_state_name = make_state_name(self.starting_state, other.starting_state)
+        start_state_name = make_state_name(
+            self.starting_state, other.starting_state
+        )
         start_state = State(
             start_state_name,
             op(self.starting_state, other.starting_state),
@@ -466,7 +490,9 @@ class Dfa:
                         unprocessed_pairs.append((next_q1, next_q2))
 
                     # Add transition.
-                    new_transitions[current_state][symbol] = new_states[next_state_name]
+                    new_transitions[current_state][symbol] = new_states[
+                        next_state_name
+                    ]
 
         return Dfa(
             starting_state=start_state,
@@ -489,7 +515,10 @@ class Dfa:
             ValueError: If the alphabets of the two DFAs are not the same.
 
         """
-        return self.__bin_op(other, lambda q1, q2: q1.is_accepting and q2.is_accepting)
+        return self.__bin_op(
+            other,
+            lambda q1, q2: q1.is_accepting and q2.is_accepting,
+        )
 
     def __and__(self, other: "Dfa") -> "Dfa":
         """
@@ -514,7 +543,10 @@ class Dfa:
             ValueError: If the alphabets of the two DFAs are not the same.
 
         """
-        return self.__bin_op(other, lambda q1, q2: q1.is_accepting or q2.is_accepting)
+        return self.__bin_op(
+            other,
+            lambda q1, q2: q1.is_accepting or q2.is_accepting,
+        )
 
     def __or__(self, other: "Dfa") -> "Dfa":
         """
@@ -540,7 +572,8 @@ class Dfa:
 
         """
         return self.__bin_op(
-            other, lambda q1, q2: q1.is_accepting and not q2.is_accepting
+            other,
+            lambda q1, q2: q1.is_accepting and not q2.is_accepting,
         )
 
     def __sub__(self, other: "Dfa") -> "Dfa":
