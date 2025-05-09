@@ -14,7 +14,7 @@ This module is dedicated to the representation of a Deterministic Finite Automat
 ## How to use
 
 ```python
-from dfa import Dfa, State
+from src.dfa import Dfa, State
 
 # Define the alphabet.
 alphabet = set("01")

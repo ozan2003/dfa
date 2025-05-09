@@ -1,5 +1,4 @@
-from src.dfa.dfa import Dfa, State
-from src.dfa.minimize import minimize
+from src.dfa import Dfa, State, minimize
 
 
 def main() -> None:
