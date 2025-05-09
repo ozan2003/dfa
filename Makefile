@@ -12,7 +12,7 @@ VENV_ACTIVATE := . .venv/bin/activate
 
 # Run the main program.
 run:
-	$(VENV_PYTHON) $(SRC_DIR)/main.py
+	$(VENV_PYTHON) main.py
 
 minver:
 	# Check for vermin.
