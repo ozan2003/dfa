@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dfa"
+version = "0.1.0"
+description = "Implementation of Deterministic Finite Automaton as Graph."
+requires-python = ">=3.9"
+dependencies = [
+    "vermin>=1.6.0",
+    "pytest>=8.3.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.9.0",
+    "ruff>=0.2.2",
+]
+
+[tool.ruff]
+line-length = 79
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN",  # flake8-annotations
+    "COM",  # flake8-commas
+    "C90",  # mccabe complexity
+    "DJ",   # django
+    "EXE",  # flake8-executable
+    "T10",  # debugger
+    "TID",  # flake8-tidy-imports
+    # specific rules
+    "D100", # ignore missing docs
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D200",
+    "D203", # one blank line before class (conflicts with D211)
+    "D205", 
+    "D212",
+    "D400",
+    "D401",
+    "D415",
+    "E402", # false positives for local imports
+    "E501", # line too long
+    "TRY003", # external messages in exceptions are too verbose
+    "TD002",
+    "TD003",
+    "FIX002", # too verbose descriptions of todos
+    "T201",
+    "FA102",
+    "FA100",
+    "S101",
+    "FBT003",
+    "PT011"
+]
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
