@@ -1,5 +1,5 @@
 """
-This module contains the `State` class which used for representing states in a finite automaton.
+Module containing the `State` class for representing states in a finite automaton.
 """
 
 from typing import NamedTuple
