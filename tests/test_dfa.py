@@ -551,3 +551,97 @@ class TestDFA:
         union_by_hand_dfa.add_transition("q_odd,q_odd", "1", "q_even,q_even")
 
         assert union == union_by_hand_dfa
+
+    def test_set_difference(self):
+        alphabet = set("01")
+
+        # DFA that accepts strings with even number of 1s
+        states_1 = {
+            "a0": State("a0", True),  # accepting state for even number of 1s
+            "a1": State("a1"),  # non-accepting state for odd number of 1s
+        }
+
+        dfa1 = Dfa(
+            states_1["a0"],
+            states_1,
+            alphabet,
+        )
+
+        dfa1.add_transition("a0", "0", "a0")  # 0 doesn't change parity
+        dfa1.add_transition("a0", "1", "a1")  # 1 changes parity to odd
+        dfa1.add_transition("a1", "0", "a1")  # 0 doesn't change parity
+        dfa1.add_transition("a1", "1", "a0")  # 1 changes parity back to even
+
+        # DFA that accepts strings ending with 1
+        states_2 = {
+            "b0": State("b0"),  # non-accepting state
+            "b1": State(
+                "b1", True
+            ),  # accepting state for strings ending with 1
+        }
+
+        dfa2 = Dfa(
+            states_2["b0"],
+            states_2,
+            alphabet,
+        )
+
+        dfa2.add_transition("b0", "0", "b0")  # String now ends with 0
+        dfa2.add_transition("b0", "1", "b1")  # String now ends with 1
+        dfa2.add_transition("b1", "0", "b0")  # String now ends with 0
+        dfa2.add_transition("b1", "1", "b1")  # String now ends with 1
+
+        # Let's verify the individual DFAs first
+        # DFA1 - Accepts strings with even number of 1s
+        assert dfa1.run("")  # 0 ones - even - accept
+        assert dfa1.run("0")  # 0 ones - even - accept
+        assert not dfa1.run("1")  # 1 one - odd - reject
+        assert dfa1.run("11")  # 2 ones - even - accept
+        assert not dfa1.run("111")  # 3 ones - odd - reject
+
+        # DFA2 - Accepts strings ending with 1
+        assert not dfa2.run("")  # Empty string doesn't end with 1 - reject
+        assert not dfa2.run("0")  # Ends with 0 - reject
+        assert dfa2.run("1")  # Ends with 1 - accept
+        assert not dfa2.run("10")  # Ends with 0 - reject
+        assert dfa2.run("11")  # Ends with 1 - accept
+
+        # The set difference should accept strings with even number of 1s
+        # that do not end with 1 (even parity AND not ending with 1)
+        difference = dfa1.set_difference(dfa2)
+
+        # Test some strings
+        # "" - empty string, even number of 1s (0) and doesn't end with 1 - should be accepted
+        assert dfa1.run("")
+        assert not dfa2.run("")
+        assert difference.run("")
+
+        # "0" - even number of 1s (0) and ends with 0 - should be accepted
+        assert dfa1.run("0")
+        assert not dfa2.run("0")
+        assert difference.run("0")
+
+        # "1" - odd number of 1s (1) and ends with 1 - should be rejected
+        assert not dfa1.run("1")
+        assert dfa2.run("1")
+        assert not difference.run("1")
+
+        # "10" - odd number of 1s (1) and ends with 0 - should be rejected
+        assert not dfa1.run("10")
+        assert not dfa2.run("10")
+        assert not difference.run("10")
+
+        # "11" - even number of 1s (2) and ends with 1 - should be rejected
+        assert dfa1.run("11")
+        assert dfa2.run("11")
+        assert not difference.run("11")
+
+        # "110" - even number of 1s (2) and ends with 0 - should be accepted
+        assert dfa1.run("110")
+        assert not dfa2.run("110")
+        assert difference.run("110")
+
+        # "100" - odd number of 1s (1) and ends with 0 - should be rejected
+        assert not dfa1.run("100")
+        assert not dfa2.run("100")
+        assert not difference.run("100")

@@ -8,6 +8,7 @@ This module is dedicated to the representation of a Deterministic Finite Automat
 - Minimization
 - Intersection
 - Union
+- Set difference
 - JSON serialization/deserialization
 
 ## How to use
