@@ -52,7 +52,7 @@ class Dfa:
         default_factory=dict
     )
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Convert alphabet to frozenset for immutability and serializability.
         self.alphabet = frozenset(self.alphabet)
 
@@ -177,15 +177,10 @@ class Dfa:
                 msg = f"Symbol '{symbol}' not in alphabet."
                 raise ValueError(msg)
 
-            # Go to the next state, or None if there is no transition.
-            current_state = self.transition_table[current_state].get(
-                symbol,
-                None,
-            )
-            # If the current state is None,
-            # the DFA is stuck and the string is not accepted.
-            if current_state is None:
+            # Go to the next state
+            if symbol not in self.transition_table[current_state]:
                 return False
+            current_state = self.transition_table[current_state][symbol]
         return current_state.is_accepting
 
     def __getattr__(self, state_name: str) -> Optional[State]:
