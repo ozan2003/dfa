@@ -27,7 +27,6 @@ test:
 # Clean up Python cache files.
 clean:
 	find . -type f -name "*.pyc" -delete
-	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
