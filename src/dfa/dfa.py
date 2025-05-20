@@ -323,68 +323,149 @@ class Dfa:
 
         return accepting_states_of_self == accepting_states_of_other
 
-    def dump_json(self, path: Path) -> None:
+    def dump_json(self, path: Path | str) -> None:
         """
         Dump the DFA object to a JSON file.
 
         Args:
-            path (Path): The path to the JSON file.
+            path (Path | str): The path to the JSON file.
 
         Returns:
             None
 
+        Raises:
+            OSError: If writing to the file fails.
+            ValueError: If the path is not a file.
+
         """
+        # Convert string path to Path object if needed
+        if isinstance(path, str):
+            path = Path(path)
+
+        # Ensure the path is a file
+        if not path.is_file():
+            msg = f"Path '{path}' is not a file."
+            raise ValueError(msg)
+
         # Convert the DFA to a serializable dictionary
         dfa_dict: dict[str, Any] = {
-            "starting_state": self.starting_state.name,  # Just store the name
+            "starting_state": self.starting_state.name,
             "states": {
                 name: {"name": state.name, "is_accepting": state.is_accepting}
                 for name, state in self.states.items()
             },
-            "alphabet": tuple(
-                self.alphabet
-            ),  # Convert set to tuple for serialization
+            # tuples are immutable, more suited for serialization
+            "alphabet": tuple(self.alphabet),
             "transition_table": {
-                from_state.name: {  # Use state names as keys
-                    symbol: to_state.name  # Store state names instead of State objects
+                from_state.name: {
+                    symbol: to_state.name
                     for symbol, to_state in transitions.items()
                 }
                 for from_state, transitions in self.transition_table.items()
             },
         }
-        with path.open("w") as file:
-            json.dump(dfa_dict, file, indent=2)
+
+        try:
+            # Ensure parent directory exists
+            path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Write to file
+            with path.open("w") as file:
+                json.dump(dfa_dict, file, indent=2)
+        except OSError as exc:
+            msg = f"Failed to write DFA to {path}: {exc}"
+            raise OSError(msg) from exc
 
     @classmethod
-    def from_json(cls, path: Path) -> "Dfa":
+    def from_json(cls, path: Path | str) -> "Dfa":
         """
         Load the DFA object from a JSON file.
 
         Args:
-            path (Path): The path to the JSON file.
+            path (Path | str): The path to the JSON file.
 
         Returns:
             Dfa: The DFA object loaded from the JSON file.
 
-        """
-        with path.open("r") as file:
-            data = json.load(file)
+        Raises:
+            IOError: If reading from the file fails.
+            ValueError: If the JSON structure is invalid for a DFA.
 
-        # First recreate all states
-        states = {
-            name: State(state_data["name"], state_data["is_accepting"])
-            for name, state_data in data["states"].items()
-        }
+        """
+        # Convert string path to Path object if needed
+        if isinstance(path, str):
+            path = Path(path)
+
+        # Load and parse the JSON file
+        try:
+            with path.open("r") as file:
+                data = json.load(file)
+        except OSError as exc:
+            msg = f"Failed to read DFA from {path}: {exc}"
+            raise OSError(msg) from exc
+        except json.JSONDecodeError as exc:
+            msg = f"Invalid JSON in {path}: {exc}"
+            raise ValueError(msg) from exc
+
+        # Validate required fields
+        required_fields = (
+            "starting_state",
+            "states",
+            "alphabet",
+            "transition_table",
+        )
+        missing_fields = tuple(
+            field for field in required_fields if field not in data
+        )
+        if len(missing_fields) > 0:
+            msg = f"Missing required fields in DFA JSON: {', '.join(missing_fields)}"
+            raise ValueError(msg)
+
+        # Recreate all states
+        try:
+            states = {
+                name: State(
+                    state_data["name"],
+                    state_data["is_accepting"],
+                )
+                for name, state_data in data["states"].items()
+            }
+        except (KeyError, TypeError) as exc:
+            msg = f"Invalid state data in DFA JSON: {exc}"
+            raise ValueError(msg) from exc
+
+        # Validate starting state exists
+        if data["starting_state"] not in states:
+            msg = f"Starting state '{data['starting_state']}' not defined in states"
+            raise ValueError(msg)
 
         # Reconstruct transition table using the recreated states
         transition_table: dict[State, dict[str, State]] = {}
-        for from_state_name, transitions in data["transition_table"].items():
-            from_state = states[from_state_name]
-            transition_table[from_state] = {
-                symbol: states[to_state_name]
-                for symbol, to_state_name in transitions.items()
-            }
+        try:
+            for from_state_name, transitions in data[
+                "transition_table"
+            ].items():
+                if from_state_name not in states:
+                    msg = f"Unknown state '{from_state_name}' in transition table"
+                    raise ValueError(msg)
 
+                from_state = states[from_state_name]
+                transition_table[from_state] = {}
+
+                # Assign transitions of `from_state`.
+                for symbol, to_state_name in transitions.items():
+                    if to_state_name not in states:
+                        msg = f"Unknown target state '{to_state_name}' for symbol '{symbol}'"
+                        raise ValueError(msg)
+
+                    transition_table[from_state][symbol] = states[
+                        to_state_name
+                    ]
+        except (KeyError, TypeError) as exc:
+            msg = f"Invalid transition table in DFA JSON: {exc}"
+            raise ValueError(msg) from exc
+
+        # Create and return the new DFA
         return cls(
             starting_state=states[data["starting_state"]],
             states=states,
