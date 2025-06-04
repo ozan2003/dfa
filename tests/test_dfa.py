@@ -8,7 +8,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from src.dfa.dfa import Dfa
 from src.dfa.minimize import minimize
 from src.dfa.state import State
