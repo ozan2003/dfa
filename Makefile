@@ -1,65 +1,76 @@
 # Variables
-PYTHON := python3
-SRC_DIR := src
-VENV := .venv
 UV := uv
-VENV_PYTHON := .venv/bin/python
-VENV_ACTIVATE := . .venv/bin/activate
+SRC_DIR := src
+TEST_DIR := tests
 
 # Targets
-.PHONY: run test clean help lint typecheck setup dev-setup
-.SILENT: minver # Don't show the command being run.
+.PHONY: install install-dev run test clean lint typecheck format check minver help
+.SILENT: minver
 
-# Run the main program.
+# Install production dependencies
+install:
+	$(UV) sync --no-dev
+
+# Install with development dependencies  
+install-dev:
+	$(UV) sync --extra dev
+
+# Run the main program
 run:
-	$(VENV_PYTHON) main.py
+	$(UV) run python main.py
 
+# Check minimum Python version requirements
 minver:
-	# Check for vermin.
-	$(VENV_ACTIVATE) && vermin --version > /dev/null || (echo "vermin is not installed. Run '$(UV) pip install vermin' to install it." && exit 1)
+	$(UV) run vermin --backport dataclasses --backport typing --no-parse-comments --eval-annotations .
 
-	$(VENV_ACTIVATE) && vermin --backport dataclasses --backport typing --no-parse-comments --eval-annotations .
-
-# Run tests with pytest.
+# Run tests with pytest
 test:
-	$(VENV_PYTHON) -m pytest -v
+	$(UV) run pytest
 
-# Clean up Python cache files.
+# Run linting with ruff
+lint:
+	$(UV) run ruff check .
+
+# Format code with ruff
+format:
+	$(UV) run ruff format .
+
+# Run type checking with mypy
+typecheck:
+	$(UV) run mypy $(SRC_DIR)
+
+# Run all checks (lint, format check, typecheck, test)
+check: lint typecheck test
+	@echo "All checks passed!"
+
+# Clean up Python cache files and build artifacts
 clean:
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	rm -rf .pytest_cache
+	find . -type d -name ".pytest_cache" -exec rm -rf {} +
+	find . -type d -name "build" -exec rm -rf {} +
+	find . -type d -name "dist" -exec rm -rf {} +
 
-# Setup the project for development
-setup:
-	$(UV) venv
-	$(UV) pip install -e .
-
-# Setup with development dependencies
-dev-setup:
-	$(UV) venv
-	$(UV) pip install -e ".[dev]"
-
-# Run linting with ruff
-lint:
-	$(VENV_PYTHON) -m ruff check .
-
-# Run type checking with mypy
-typecheck:
-	$(VENV_PYTHON) -m mypy $(SRC_DIR)
-
+# Show help
 help:
 	@echo "Usage: make [target]"
-	@echo "Targets:"
-	@echo "   run          Run the main program."
-	@echo "   test         Run tests with pytest."
-	@echo "   clean        Clean up Python cache files."
-	@echo "   minver       Check the minimum Python version required. (requires vermin)"
-	@echo "   setup        Setup the project for development"
-	@echo "   dev-setup    Setup with development dependencies"
+	@echo ""
+	@echo "Setup targets:"
+	@echo "   install      Install production dependencies"
+	@echo "   install-dev  Install with development dependencies"
+	@echo ""
+	@echo "Development targets:"
+	@echo "   run          Run the main program"
+	@echo "   test         Run tests with pytest"
 	@echo "   lint         Run linting with ruff"
+	@echo "   format       Format code with ruff"
 	@echo "   typecheck    Run type checking with mypy"
-	@echo "   help         Show this help message."
+	@echo "   check        Run all checks (lint, typecheck, test)"
+	@echo "   minver       Check minimum Python version requirements"
+	@echo ""
+	@echo "Utility targets:"
+	@echo "   clean        Clean up cache files and build artifacts"
+	@echo "   help         Show this help message"

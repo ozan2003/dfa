@@ -6,21 +6,24 @@ build-backend = "setuptools.build_meta"
 name = "dfa"
 version = "0.1.0"
 description = "Implementation of Deterministic Finite Automaton as Graph."
+readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.9"
 dependencies = [
     "vermin>=1.6.0",
-    "pytest>=8.3.5",
 ]
 
 [project.optional-dependencies]
 dev = [
     "mypy>=1.9.0",
     "ruff>=0.2.2",
+    "pytest>=8.3.5",
 ]
 
 [tool.ruff]
 line-length = 79
 target-version = "py39"
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -63,7 +66,27 @@ ignore = [
 ]
 
 [tool.mypy]
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
