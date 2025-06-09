@@ -1,6 +1,6 @@
 # DFA
 
-This module is dedicated to the representation of a Deterministic Finite Automaton (DFA) as a graph data structure in Python.
+This module is dedicated to the representation of a deterministic finite state machine as a graph data structure in Python.
 
 ## Supported operations
 
