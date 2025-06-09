@@ -1,8 +1,10 @@
-from src.dfa import Dfa, State, minimize
+from src.dfa import Dfa, State, minimize, save_dfa_graph
 
 
 def main() -> None:
-    # Vizede sorulan DFA.
+    """
+    Demo for DFA minimization.
+    """
     alphabet = set("ab")
 
     states = {
@@ -32,11 +34,11 @@ def main() -> None:
         transitions,
     )
 
-    print(f"Non-minimized DFA: {non_minimized_dfa}")
+    save_dfa_graph(non_minimized_dfa, "non_minimized_dfa")
 
     minimized_dfa = minimize(non_minimized_dfa)
 
-    print(f"Minimized DFA: {minimized_dfa}")
+    save_dfa_graph(minimized_dfa, "minimized_dfa")
 
 
 if __name__ == "__main__":

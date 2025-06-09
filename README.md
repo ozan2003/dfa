@@ -10,6 +10,7 @@ This module is dedicated to the representation of a Deterministic Finite Automat
 - Union
 - Set difference
 - JSON serialization/deserialization
+- Visualization
 
 ## How to use
 
@@ -56,9 +57,17 @@ loaded_dfa = Dfa.from_json(Path("my_dfa.json"))
 assert loaded_dfa.run("010101") == dfa.run("010101")
 ```
 
+### Visualization Example
+
+```python
+from src.dfa import save_dfa_graph
+
+save_dfa_graph(dfa, "my_dfa")
+```
+
 ## Dependencies
 
 - Python 3.9 or higher
 - [pytest](https://docs.pytest.org/en/stable/)
-- [vermin](https://github.com/netromdk/vermin)
 - [uv](https://github.com/astral-sh/uv)
+- [graphviz](https://graphviz.org/)
