@@ -2,8 +2,6 @@
 Implementation file of DFA minimization algorithm.
 """
 
-from typing import Optional
-
 from .dfa import Dfa
 from .state import State
 
@@ -38,7 +36,7 @@ def minimize(dfa: Dfa) -> Dfa:
     ]
 
     # Helper function to find the group a state belongs to.
-    def find_group(state: State, partition: list[set[State]]) -> Optional[int]:
+    def find_group(state: State, partition: list[set[State]]) -> int | None:
         """
         Find the index of the group in the partition that contains the given state.
 
@@ -66,9 +64,9 @@ def minimize(dfa: Dfa) -> Dfa:
 
         for group in state_partition:
             # Split group into smaller groups based on transitions.
-            split_groups: dict[tuple[Optional[int], ...], set[State]] = {}
+            split_groups: dict[tuple[int | None, ...], set[State]] = {}
             for state in group:
-                signature: tuple[Optional[int], ...] = tuple(
+                signature: tuple[int | None, ...] = tuple(
                     find_group(
                         dfa.transition_table[state][symbol],
                         state_partition,
