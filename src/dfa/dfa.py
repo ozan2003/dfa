@@ -8,13 +8,18 @@ Classes:
     DFA: A class representing a Deterministic Finite Automaton (DFA).
 """
 
+from __future__ import annotations
+
 import json
 from collections import deque
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import TYPE_CHECKING, Any
 
 from .state import State
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @dataclass
@@ -72,7 +77,7 @@ class Dfa:
 
         return f"DFA(Starting state: {self.starting_state}, Σ: {self.alphabet}):\n{table}"
 
-    def get_state(self, state_name: str) -> Optional[State]:
+    def get_state(self, state_name: str) -> State | None:
         """
         Retrieve the state object associated with the given name.
 
@@ -80,7 +85,7 @@ class Dfa:
             state_name (str): The name of the `State` to retrieve.
 
         Returns:
-            Optional[State]: The `State` object if found, otherwise `None`.
+            State | None: The `State` object if found, otherwise `None`.
 
         """
         return self.states.get(state_name, None)
@@ -183,7 +188,7 @@ class Dfa:
             current_state = self.transition_table[current_state][symbol]
         return current_state.is_accepting
 
-    def __getattr__(self, state_name: str) -> Optional[State]:
+    def __getattr__(self, state_name: str) -> State | None:
         """
         Get a state by name.
 
@@ -191,7 +196,7 @@ class Dfa:
             state_name (str): The name of the state to retrieve.
 
         Returns:
-            Optional[State]: The `State` object if found, otherwise `None`.
+            State | None: The `State` object if found, otherwise `None`.
 
         """
         return self.get_state(state_name)
@@ -377,7 +382,7 @@ class Dfa:
             raise OSError(msg) from exc
 
     @classmethod
-    def from_json(cls, path: Path | str) -> "Dfa":
+    def from_json(cls, path: Path | str) -> Dfa:
         """
         Load the DFA object from a JSON file.
 
@@ -473,9 +478,7 @@ class Dfa:
             transition_table=transition_table,
         )
 
-    def __bin_op(
-        self, other: "Dfa", op: Callable[[State, State], bool]
-    ) -> "Dfa":
+    def __bin_op(self, other: Dfa, op: Callable[[State, State], bool]) -> Dfa:
         """
         Helper generic function to perform binary operations on two DFAs.
 
@@ -577,7 +580,7 @@ class Dfa:
             transition_table=new_transitions,
         )
 
-    def intersection(self, other: "Dfa") -> "Dfa":
+    def intersection(self, other: Dfa) -> Dfa:
         """
         Compute the intersection of two DFAs using product construction.
 
@@ -596,16 +599,16 @@ class Dfa:
             lambda q1, q2: q1.is_accepting and q2.is_accepting,
         )
 
-    def __and__(self, other: "Dfa") -> "Dfa":
+    def __and__(self, other: Dfa) -> Dfa:
         """
         Shorthand for the `intersection` method.
         """
         return self.intersection(other)
 
-    def __rand__(self, other: "Dfa") -> "Dfa":
+    def __rand__(self, other: Dfa) -> Dfa:
         return self & other
 
-    def union(self, other: "Dfa") -> "Dfa":
+    def union(self, other: Dfa) -> Dfa:
         """
         Compute the union of two DFAs using product construction.
 
@@ -624,16 +627,16 @@ class Dfa:
             lambda q1, q2: q1.is_accepting or q2.is_accepting,
         )
 
-    def __or__(self, other: "Dfa") -> "Dfa":
+    def __or__(self, other: Dfa) -> Dfa:
         """
         Shorthand for the `union` method.
         """
         return self.union(other)
 
-    def __ror__(self, other: "Dfa") -> "Dfa":
+    def __ror__(self, other: Dfa) -> Dfa:
         return self | other
 
-    def set_difference(self, other: "Dfa") -> "Dfa":
+    def set_difference(self, other: Dfa) -> Dfa:
         """
         Compute the set difference of two DFAs using product construction.
 
@@ -652,11 +655,11 @@ class Dfa:
             lambda q1, q2: q1.is_accepting and not q2.is_accepting,
         )
 
-    def __sub__(self, other: "Dfa") -> "Dfa":
+    def __sub__(self, other: Dfa) -> Dfa:
         """
         Shorthand for the `set_difference` method.
         """
         return self.set_difference(other)
 
-    def __rsub__(self, other: "Dfa") -> "Dfa":
+    def __rsub__(self, other: Dfa) -> Dfa:
         return self - other

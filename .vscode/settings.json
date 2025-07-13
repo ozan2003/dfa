@@ -3,7 +3,9 @@
     "python.analysis.autoImportCompletions": true,
     "python.analysis.diagnosticSeverityOverrides": {
         "reportMissingTypeStubs": "none",
-        "reportUnknownMemberType": "none"
+        "reportUnknownMemberType": "none",
+        "reportUnknownVariableType": "none",
+        "reportDeprecated": "none",
     },
     "python.testing.unittestArgs": [
         "-v",

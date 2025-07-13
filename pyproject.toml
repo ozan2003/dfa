@@ -63,7 +63,7 @@ ignore = [
     "FA100",
     "S101",
     "FBT003",
-    "PT011"
+    "PT011",
 ]
 
 [tool.mypy]
