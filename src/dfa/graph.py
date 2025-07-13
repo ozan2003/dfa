@@ -51,7 +51,7 @@ def visualize(
     )
 
     # Set graph attributes for better visualization
-    dot.attr(rankdir=rankdir)
+    dot.attr(rankdir=rankdir.value)
     dot.attr("node", shape="circle", fontname="Arial", fontsize="12")
     dot.attr("edge", fontname="Arial", fontsize="10")
     dot.attr(
