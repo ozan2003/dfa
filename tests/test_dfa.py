@@ -72,7 +72,7 @@ class TestDFA:
             alphabet,
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"Symbol '.+' not in"):
             dfa.run("2")
 
     def test_dfa_equivalence(self):
@@ -115,7 +115,7 @@ class TestDFA:
             alphabet,
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"Symbol '.+' not in"):
             dfa.add_transition("s0", "2", "s1")
 
     def test_same_transition_twice(self):
@@ -127,7 +127,10 @@ class TestDFA:
 
         dfa.add_transition("s0", "0", "s1")
 
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError,
+            match=r"Transition from (:?.*) for the same symbol (:?.*) already exists.",
+        ):
             dfa.add_transition("s0", "0", "s0")
 
     def test_odd_ones(self):

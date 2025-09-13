@@ -7,19 +7,12 @@ name = "dfa"
 version = "0.1.0"
 description = "Implementation of Deterministic Finite Automaton as Graph."
 readme = "README.md"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 requires-python = ">=3.9"
-dependencies = [
-    "graphviz>=0.20.3",
-    "vermin>=1.6.0",
-]
+dependencies = ["graphviz>=0.20.3", "vermin>=1.6.0"]
 
 [project.optional-dependencies]
-dev = [
-    "mypy>=1.9.0",
-    "ruff>=0.2.2",
-    "pytest>=8.3.5",
-]
+dev = ["mypy>=1.9.0", "ruff>=0.2.2", "pytest>=8.3.5"]
 
 [tool.ruff]
 line-length = 79
@@ -27,44 +20,47 @@ target-version = "py39"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-    "ANN",  # flake8-annotations
-    "COM",  # flake8-commas
-    "C90",  # mccabe complexity
-    "DJ",   # django
-    "EXE",  # flake8-executable
-    "T10",  # debugger
-    "TID",  # flake8-tidy-imports
-    # specific rules
-    "D100", # ignore missing docs
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "N",
+    "UP",
+    "B",
+    "A",
+    "C4",
+    "PIE",
+    "SIM",
+    "RET",
+    "ARG",
+    "PTH",
+    "PL",
+    "RUF",
+    "S",
+    "BLE",
+    "ANN",
+    "ASYNC",
+    "PT",
     "D101",
     "D102",
     "D103",
-    "D104",
-    "D105",
-    "D106",
-    "D107",
-    "D200",
-    "D203", # one blank line before class (conflicts with D211)
-    "D205", 
-    "D212",
-    "D400",
-    "D401",
-    "D415",
-    "E402", # false positives for local imports
-    "E501", # line too long
-    "TRY003", # external messages in exceptions are too verbose
-    "TD002",
-    "TD003",
-    "FIX002", # too verbose descriptions of todos
-    "T201",
-    "FA102",
-    "FA100",
-    "S101",
-    "FBT003",
-    "PT011",
 ]
+ignore = [
+    "E501",
+    "ISC001",
+    "COM812",
+    "D203",
+    "D213",
+    "ANN101",
+    "ANN102",
+    "ANN401", # use Any in **kwargs
+    "PLR2004",
+    "S101",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "ANN", "D101", "D102", "D103"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -87,8 +83,4 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = [
-    "--strict-markers",
-    "--strict-config",
-    "-ra",
-]
+addopts = ["--strict-markers", "--strict-config", "-ra"]
