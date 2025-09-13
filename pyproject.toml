@@ -29,6 +29,7 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+    # Category ignores
     "ANN",  # flake8-annotations
     "COM",  # flake8-commas
     "C90",  # mccabe complexity
@@ -36,35 +37,59 @@ ignore = [
     "EXE",  # flake8-executable
     "T10",  # debugger
     "TID",  # flake8-tidy-imports
-    # specific rules
-    "D100", # ignore missing docs
-    "D101",
-    "D102",
-    "D103",
-    "D104",
-    "D105",
-    "D106",
-    "D107",
-    "D200",
+    
+    # Documentation rules
+    "D100", # missing module docstring
+    "D101", # missing class docstring
+    "D102", # missing function docstring
+    "D103", # missing function docstring in public package
+    "D104", # missing package docstring
+    "D105", # missing magic method docstring
+    "D106", # missing nested class docstring
+    "D107", # missing __init__ docstring
+    "D200", # one-line docstring should fit on one line
     "D203", # one blank line before class (conflicts with D211)
-    "D205", 
-    "D212",
-    "D400",
-    "D401",
-    "D415",
-    "E402", # false positives for local imports
-    "E501", # line too long
+    "D205", # blank line required between summary and description
+    "D211", # no-blank-line-before-class
+    "D212", # multi-line docstring starts with a new line
+    "D213", # multi-line-summary-second-line
+    "D400", # first line should end with a period
+    "D401", # first line should be in imperative mood
+    "D413", # missing blank line after last section
+    "D415", # first line should end with punctuation
+    
+    # Code style and formatting
+    "COM812", # missing-trailing-comma
+    "E402",   # false positives for local imports
+    "E501",   # line too long (formatter handles this)
+    "ISC001", # conflicts with formatter
+    
+    # Error handling
+    "EM101",  # raw-string-in-exception
     "TRY003", # external messages in exceptions are too verbose
-    "TD002",
-    "TD003",
-    "FIX002", # too verbose descriptions of todos
-    "T201",
-    "FA102",
-    "FA100",
-    "S101",
-    "FBT003",
-    "PT011",
+    
+    # TODO and comments
+    "ERA001", # commented-out code
+    "FIX002", # line-contains-todo
+    "TD002",  # missing author in TODO
+    "TD003",  # missing-todo-link
+    
+    # Miscellaneous
+    "ANN401", # any type annotation
+    "CPY001", # missing copyright notice
+    "FA100",  # future annotations
+    "FA102",  # future annotations false positive
+    "FBT003", # boolean positional argument
+    "N802",   # function name should be lowercase
+    "PLR0904", # too many public methods
+    "PT011",  # pytest-raises-too-broad
+    "S101",   # use of assert
+    "S311",   # standard pseudo-random generators
+    "T201",   # print statement
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "T201"]
 
 [tool.mypy]
 python_version = "3.12"

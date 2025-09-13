@@ -241,7 +241,7 @@ class Dfa:
 
             """
             state_to_index: dict[State, int] = {}
-            # index_to_state: dict[int, State] = {}  # noqa: ERA001
+            # index_to_state: dict[int, State] = {}
             state_queue: deque[State] = deque([dfa.starting_state])
             visited_states: set[State] = set()
 
@@ -253,7 +253,7 @@ class Dfa:
                     continue
                 visited_states.add(state)
                 state_to_index[state] = next_index
-                # index_to_state[next_index] = state  # noqa: ERA001
+                # index_to_state[next_index] = state
                 next_index += 1
 
                 # Enqueue transitions.
@@ -294,8 +294,8 @@ class Dfa:
 
             return canonical_transitions
 
-        # state_to_index_self, _ = canonical_form(self)  # noqa: ERA001
-        # state_to_index_other, _ = canonical_form(other)  # noqa: ERA001
+        # state_to_index_self, _ = canonical_form(self)
+        # state_to_index_other, _ = canonical_form(other)
         state_to_index_self = canonical_form(self)
         state_to_index_other = canonical_form(other)
 
