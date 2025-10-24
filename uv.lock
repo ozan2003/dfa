@@ -20,7 +20,7 @@ dependencies = [
     { name = "vermin" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "mypy" },
     { name = "pytest" },
@@ -30,12 +30,15 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "graphviz", specifier = ">=0.20.3" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.9.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.5" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.2.2" },
     { name = "vermin", specifier = ">=1.6.0" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=1.9.0" },
+    { name = "pytest", specifier = ">=8.3.5" },
+    { name = "ruff", specifier = ">=0.2.2" },
+]
 
 [[package]]
 name = "exceptiongroup"
